@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                                 Integer.parseInt((String)lST2.get(i).getValue()),
                                 Integer.parseInt((String)lTem.get(i).getValue())
                         );
-                        telemetriaViewModel.insert(tmItem);
+                        //telemetriaViewModel.insert(tmItem);
                         Log.i(LOG_TAG, " timestamps ["+i
                                 +"] ["+String.valueOf(lCo2.get(i).getTs())+"|"+String.valueOf(lCo2.get(i).getValue())+"]"
                                 +"] ["+String.valueOf(lHum.get(i).getTs())+"|"+String.valueOf(lHum.get(i).getValue())+"]"
