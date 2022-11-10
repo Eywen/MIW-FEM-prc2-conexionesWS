@@ -1,9 +1,9 @@
-package com.example.practica2fem.pojo;
+package com.example.practica2fem.pojo.telemetry;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SoilTemp2 {
+public class Temperature {
 
     @SerializedName("ts")
     @Expose
@@ -16,7 +16,7 @@ public class SoilTemp2 {
      * No args constructor for use in serialization
      * 
      */
-    public SoilTemp2() {
+    public Temperature() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class SoilTemp2 {
      * @param value
      * @param ts
      */
-    public SoilTemp2(Long ts, String value) {
+    public Temperature(Long ts, String value) {
         super();
         this.ts = ts;
         this.value = value;

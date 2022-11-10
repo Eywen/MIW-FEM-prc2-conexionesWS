@@ -9,19 +9,23 @@ import android.widget.Toast;
 import com.example.practica2fem.device.ISpikeRESTAPIService;
 import com.example.practica2fem.models.TelemetriaEntity;
 import com.example.practica2fem.models.TelemetriaViewModel;
-import com.example.practica2fem.pojo.Co2;
-import com.example.practica2fem.pojo.Humidity;
-import com.example.practica2fem.pojo.Light;
-import com.example.practica2fem.pojo.Measurement;
-import com.example.practica2fem.pojo.Sensors;
-import com.example.practica2fem.pojo.SoilTemp1;
-import com.example.practica2fem.pojo.SoilTemp2;
-import com.example.practica2fem.pojo.Temperature;
+import com.example.practica2fem.pojo.historicalweather.HistoricalWatherResponse;
+import com.example.practica2fem.pojo.telemetry.Co2;
+import com.example.practica2fem.pojo.telemetry.Humidity;
+import com.example.practica2fem.pojo.telemetry.Light;
+import com.example.practica2fem.pojo.telemetry.Measurement;
+import com.example.practica2fem.pojo.telemetry.Sensors;
+import com.example.practica2fem.pojo.telemetry.SoilTemp1;
+import com.example.practica2fem.pojo.telemetry.SoilTemp2;
+import com.example.practica2fem.pojo.telemetry.Temperature;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -29,7 +33,6 @@ import retrofit2.Retrofit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEVICE_ID = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
     private static final String PASS_THB = "student";
+    private static final String API_BASE_HISTORICAL_WEATHER = "https://archive-api.open-meteo.com/v1/";
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getTelemetries();
+        getHistoricalWeather();
     }
 
     private void getLastTelemetry() {
@@ -187,4 +192,60 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    private void getHistoricalWeather() {
+        //https://archive-api.open-meteo.com/v1/era5?latitude=52.52&longitude=13.41&start_date=2022-01-01&end_date=2022-07-13&hourly=temperature_2m
+        Map <String, String> parametersMap = new HashMap<>();
+        String latitude = "52.52";
+        String longitude = "13.41";
+        String starDate = "2000-01-01";
+        String endDate = "2000-01-01";
+        String hourly = "temperature_2m";
+        parametersMap.put("latitude", latitude);
+        parametersMap.put("longitude", longitude);
+        parametersMap.put("start_date", starDate);
+        parametersMap.put("end_date", endDate);
+        parametersMap.put("hourly", "temperature_2m");
+
+
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(API_BASE_HISTORICAL_WEATHER)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+        Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+starDate+"|"+endDate+"|"+hourly);
+        Call<HistoricalWatherResponse> call = iApi.getHistoricalRangeWeather(latitude,longitude,starDate,endDate,hourly);
+
+        call.enqueue(new Callback<HistoricalWatherResponse>() {
+            @Override
+            public void onResponse(Call<HistoricalWatherResponse> call, Response<HistoricalWatherResponse> response) {
+                HistoricalWatherResponse responseFromAPI = response.body();
+                String responseString = "Response Code : " + response.code();
+                Log.i(LOG_TAG, " response historicalWeather: "+responseString);
+
+                if (responseFromAPI == null) {
+                    Log.i(LOG_TAG, " API returned empty values for range`s time historical weather");
+                }else {
+                    Map<String, Double> mapHourly = responseFromAPI.getHourly().basicHourlyToMapHourly();
+                    TreeMap<String, Double> tShortHourly = new TreeMap<>();
+                    tShortHourly.putAll(mapHourly);
+                    Log.i(LOG_TAG, " response historicalWeather: "+responseString);
+                    Log.i(LOG_TAG, " response historicalWeather mapHourly: "+tShortHourly);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HistoricalWatherResponse> call, Throwable t) {
+                Log.e(LOG_TAG, " error message: "+t.getMessage());
+            }
+        });
+    }
+
 }

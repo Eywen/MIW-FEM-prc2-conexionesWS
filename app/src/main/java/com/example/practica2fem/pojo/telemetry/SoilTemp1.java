@@ -1,4 +1,4 @@
-package com.example.practica2fem.pojo;
+package com.example.practica2fem.pojo.telemetry;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

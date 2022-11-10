@@ -1,9 +1,9 @@
-package com.example.practica2fem.pojo;
+package com.example.practica2fem.pojo.telemetry;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Humidity {
+public class Co2 {
 
     @SerializedName("ts")
     @Expose
@@ -16,7 +16,7 @@ public class Humidity {
      * No args constructor for use in serialization
      * 
      */
-    public Humidity() {
+    public Co2() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class Humidity {
      * @param value
      * @param ts
      */
-    public Humidity(Long ts, String value) {
+    public Co2(Long ts, String value) {
         super();
         this.ts = ts;
         this.value = value;
