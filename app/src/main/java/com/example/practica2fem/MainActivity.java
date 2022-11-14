@@ -10,6 +10,7 @@ import com.example.practica2fem.device.ISpikeRESTAPIService;
 import com.example.practica2fem.models.TelemetriaEntity;
 import com.example.practica2fem.models.TelemetriaViewModel;
 import com.example.practica2fem.pojo.historicalweather.HistoricalWatherResponse;
+import com.example.practica2fem.pojo.openweather.OpenWeatherResponse;
 import com.example.practica2fem.pojo.telemetry.Co2;
 import com.example.practica2fem.pojo.telemetry.Humidity;
 import com.example.practica2fem.pojo.telemetry.Light;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String USER_THB = "studentupm2022@gmail.com";
     private static final String PASS_THB = "student";
     private static final String API_BASE_HISTORICAL_WEATHER = "https://archive-api.open-meteo.com/v1/";
+    private static final String API_BASE_ACTUAL_WEATHER = "https://api.openweathermap.org/data/2.5/";
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getTelemetries();
         getHistoricalWeather();
+        getActualWeather();
     }
 
     private void getLastTelemetry() {
@@ -99,13 +102,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-    private void getPruebaConexion(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .build();
-
-        //GitHubService service = retrofit.create(GitHubService.class);
     }
 
     private void getTelemetries() {
@@ -245,6 +241,52 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<HistoricalWatherResponse> call, Throwable t) {
                 Log.e(LOG_TAG, " error message: "+t.getMessage());
             }
+        });
+    }
+
+    private void getActualWeather() {
+//https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=7f632d39f8412e4d9fee1661705f8832&units=metric
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(API_BASE_ACTUAL_WEATHER)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+        String latitude = "44.34";
+        String longitude = "10.99";
+        String appidKey = "7f632d39f8412e4d9fee1661705f8832";
+        String unitsTemperature = "metric";
+        Log.i(LOG_TAG, " request params actualWeather: |"+ latitude +"|"+ longitude +"|"+appidKey+"|"+unitsTemperature);
+        Call<OpenWeatherResponse> call = iApi.getActualWeather(latitude,longitude,appidKey,unitsTemperature);
+
+        call.enqueue(new Callback<OpenWeatherResponse>() {
+            @Override
+            public void onResponse(Call<OpenWeatherResponse> call, Response<OpenWeatherResponse> response) {
+                OpenWeatherResponse responseFromAPI = response.body();
+                String responseString = "Response Code : " + response.code();
+                Log.i(LOG_TAG, " response actualWeather: "+responseString);
+
+                if (responseFromAPI == null) {
+                    Log.i(LOG_TAG, " API returned empty values for range`s time open weather");
+                }else {
+                    double temp = responseFromAPI.getMain().getTemp();
+                    Log.i(LOG_TAG, " response OpenWeather: "+responseString);
+                    Log.i(LOG_TAG, " response ActualWeather temperature: "+temp);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeatherResponse> call, Throwable t) {
+                Log.e(LOG_TAG, " error message: "+t.getMessage());
+            }
+
+
         });
     }
 
