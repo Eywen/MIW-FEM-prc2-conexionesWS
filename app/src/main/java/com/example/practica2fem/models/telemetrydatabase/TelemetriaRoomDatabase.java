@@ -1,4 +1,4 @@
-package com.example.practica2fem.models;
+package com.example.practica2fem.models.telemetrydatabase;
 
 import android.content.Context;
 
