@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.example.practica2fem.device.ClimateChangeApiAdapter;
 import com.example.practica2fem.device.ISpikeRESTAPIService;
+import com.example.practica2fem.models.citiedatabase.CityEntity;
+import com.example.practica2fem.models.citiedatabase.CityViewModel;
 import com.example.practica2fem.models.telemetrydatabase.TelemetriaEntity;
 import com.example.practica2fem.models.telemetrydatabase.TelemetriaViewModel;
 import com.example.practica2fem.pojo.geocodingResponse.GeocodingCityResponse;
@@ -22,6 +24,8 @@ import com.example.practica2fem.pojo.telemetry.Sensors;
 import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     //private ISpikeRESTAPIService apiService;
     private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4NTQyMTE5LCJleHAiOjE2Njg1NzA5MTksImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.02tPlyQkir9w4xIpv-cs9CBVHS4EeZKmTx74_5IFGufrcrdfqaaRW1bInj7IxUbF-bR8ygAblYX84HFer_wiVA";
+    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4NTk1MDc5LCJleHAiOjE2Njg2MjM4NzksImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.GD5__Rw43CeH7_2-X0htvmfs5YPyQn_u9ptjDtQAwm2if92UVO5JgzpwzfNiZYhWpk-A8lzvRteR9GbIpn7qCA";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
@@ -57,11 +61,13 @@ public class MainActivity extends AppCompatActivity {
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
+    private CityViewModel cityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
         //TODO: comprobar si el token no es mismo del api y cambiarlo
         //TODO: Agregar a bbdd la lista de ciudades
         citiesDataPersist();
@@ -73,13 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void citiesDataPersist() {
         getGeocodingCityAPI();
-        //getAppSpecificAlbumStorageDir();
+
     }
 
     private void getGeocodingCityAPI() {
         //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
         String service = "geocoding";
-        String cityName = "bogota";
+        String cityName = "Madrid";
         String citiesResponseNumber = "1";
 
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
@@ -109,10 +115,31 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(LOG_TAG, " API returned empty values for city name");
                 }else {
                     GeocodingData geocodingData = responseFromAPI.getResults().get(0);
+                    CityEntity cityEntity = new CityEntity();
+                    cityEntity.setId(geocodingData.getId());
+                    cityEntity.setName(geocodingData.getName());
+                    cityEntity.setLatitude(geocodingData.getLatitude());
+                    cityEntity.setLongitude(geocodingData.getLongitude());
+                    cityEntity.setElevation(geocodingData.getElevation());
+                    cityEntity.setFeature_code(geocodingData.getFeature_code());
+                    cityEntity.setCountry_code(geocodingData.getCountry_code());
+                    cityEntity.setAdmin1_id(geocodingData.getAdmin1_id());
+                    cityEntity.setAdmin2_id(geocodingData.getAdmin2_id());
+                    cityEntity.setTimezone(geocodingData.getTimezone());
+                    cityEntity.setPopulation(geocodingData.getPopulation());
+                    cityEntity.setCountry_id(geocodingData.getCountry_id());
+                    cityEntity.setCountry(geocodingData.getCountry());
+                    cityEntity.setAdmin1(geocodingData.getAdmin1());
+                    cityEntity.setAdmin2(geocodingData.getAdmin2());
                     Log.i(LOG_TAG, " geocoding data"
                             +" ["+String.valueOf(geocodingData.getName())+"|"+String.valueOf(geocodingData.getCountry())
                             + " | " +String.valueOf(geocodingData.getCountry_code())
                             +"] ["+String.valueOf(geocodingData.getLatitude())+"|"+String.valueOf(geocodingData.getLongitude())+"]");
+                    //buscar el id  en la bbdd y si no existe agregarla.
+                    CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
+                    if (null == cityInBBDD){
+                        cityViewModel.insert(cityEntity);
+                    }
                 }
             }
 
