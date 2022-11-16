@@ -24,7 +24,7 @@ import com.example.practica2fem.pojo.telemetry.Sensors;
 import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
-import androidx.lifecycle.Observer;
+
 import androidx.lifecycle.ViewModelProviders;
 
 import java.text.DateFormat;
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
     private CityViewModel cityViewModel;
+    private String cityName = "Madrid";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,85 +70,104 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
         //TODO: comprobar si el token no es mismo del api y cambiarlo
-        //TODO: Agregar a bbdd la lista de ciudades
-        citiesDataPersist();
+        //Agregar a bbdd la ciudad consultada si no existe en ella.
+        CityEntity cityEntity = citiesDataPersist(cityName);
         //getTelemetries();
         getLastTelemetryAPI();
-        getHistoricalWeatherAPI();
+        getHistoricalWeatherAPI(cityEntity);
         getActualWeather();
     }
 
-    private void citiesDataPersist() {
-        getGeocodingCityAPI();
+    private CityEntity citiesDataPersist(String cityName) {
+        List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
+        CityEntity cityEntity = null;
 
+        if (listcityInBBDD.size() > 1){
+            Log.i(LOG_TAG, "Hay mas de una ciudad con ese nombre, elija la que quiere: " + listcityInBBDD.toString());
+        } else {
+            cityEntity = listcityInBBDD.get(0);
+        }
+
+        if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
+            cityEntity = getGeocodingCityAPI(cityName);
+        }
+
+        return cityEntity;
     }
 
-    private void getGeocodingCityAPI() {
-        //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
-        String service = "geocoding";
-        String cityName = "Madrid";
-        String citiesResponseNumber = "1";
+    private CityEntity getGeocodingCityAPI(String cityName) {
 
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(httpLoggingInterceptor)
-                .build();
+        //List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
+        //if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
+            //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
+           // String service = "geocoding";
+            //String cityName = "Madrid";
+            String citiesResponseNumber = "1";
+        final CityEntity[] cityEntityResult = {null};
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(client)
-                .baseUrl(API_BASE_GEOCODING_OPEN_METEO)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+            HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(httpLoggingInterceptor)
+                    .build();
 
-        ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        Log.i(LOG_TAG, " request params geocoding: |"+ cityName +"|"+ citiesResponseNumber );
-        Call<GeocodingCityResponse> call = iApi.getGeocoding(cityName,citiesResponseNumber);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .client(client)
+                    .baseUrl(API_BASE_GEOCODING_OPEN_METEO)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        call.enqueue(new Callback<GeocodingCityResponse>() {
-            @Override
-            public void onResponse(Call<GeocodingCityResponse> call, Response<GeocodingCityResponse> response) {
-                GeocodingCityResponse responseFromAPI = response.body();
-                String responseString = "Response Code : " + response.code();
-                Log.i(LOG_TAG, " response GeocodingCity: "+responseString);
+            ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+            Log.i(LOG_TAG, " request params geocoding: |" + cityName + "|" + citiesResponseNumber);
+            Call<GeocodingCityResponse> call = iApi.getGeocoding(cityName, citiesResponseNumber);
 
-                if (responseFromAPI == null) {
-                    Log.i(LOG_TAG, " API returned empty values for city name");
-                }else {
-                    GeocodingData geocodingData = responseFromAPI.getResults().get(0);
-                    CityEntity cityEntity = new CityEntity();
-                    cityEntity.setId(geocodingData.getId());
-                    cityEntity.setName(geocodingData.getName());
-                    cityEntity.setLatitude(geocodingData.getLatitude());
-                    cityEntity.setLongitude(geocodingData.getLongitude());
-                    cityEntity.setElevation(geocodingData.getElevation());
-                    cityEntity.setFeature_code(geocodingData.getFeature_code());
-                    cityEntity.setCountry_code(geocodingData.getCountry_code());
-                    cityEntity.setAdmin1_id(geocodingData.getAdmin1_id());
-                    cityEntity.setAdmin2_id(geocodingData.getAdmin2_id());
-                    cityEntity.setTimezone(geocodingData.getTimezone());
-                    cityEntity.setPopulation(geocodingData.getPopulation());
-                    cityEntity.setCountry_id(geocodingData.getCountry_id());
-                    cityEntity.setCountry(geocodingData.getCountry());
-                    cityEntity.setAdmin1(geocodingData.getAdmin1());
-                    cityEntity.setAdmin2(geocodingData.getAdmin2());
-                    Log.i(LOG_TAG, " geocoding data"
-                            +" ["+String.valueOf(geocodingData.getName())+"|"+String.valueOf(geocodingData.getCountry())
-                            + " | " +String.valueOf(geocodingData.getCountry_code())
-                            +"] ["+String.valueOf(geocodingData.getLatitude())+"|"+String.valueOf(geocodingData.getLongitude())+"]");
-                    //buscar el id  en la bbdd y si no existe agregarla.
-                    CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
-                    if (null == cityInBBDD){
+            call.enqueue(new Callback<GeocodingCityResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingCityResponse> call, Response<GeocodingCityResponse> response) {
+                    GeocodingCityResponse responseFromAPI = response.body();
+                    String responseString = "Response Code : " + response.code();
+                    Log.i(LOG_TAG, " response GeocodingCity: " + responseString);
+
+                    if (responseFromAPI == null) {
+                        Log.i(LOG_TAG, " API returned empty values for city name");
+                    } else {
+                        GeocodingData geocodingData = responseFromAPI.getResults().get(0);
+                        CityEntity cityEntity = new CityEntity();
+                        cityEntity.setId(geocodingData.getId());
+                        cityEntity.setName(geocodingData.getName());
+                        cityEntity.setLatitude(geocodingData.getLatitude());
+                        cityEntity.setLongitude(geocodingData.getLongitude());
+                        cityEntity.setElevation(geocodingData.getElevation());
+                        cityEntity.setFeature_code(geocodingData.getFeature_code());
+                        cityEntity.setCountry_code(geocodingData.getCountry_code());
+                        cityEntity.setAdmin1_id(geocodingData.getAdmin1_id());
+                        cityEntity.setAdmin2_id(geocodingData.getAdmin2_id());
+                        cityEntity.setTimezone(geocodingData.getTimezone());
+                        cityEntity.setPopulation(geocodingData.getPopulation());
+                        cityEntity.setCountry_id(geocodingData.getCountry_id());
+                        cityEntity.setCountry(geocodingData.getCountry());
+                        cityEntity.setAdmin1(geocodingData.getAdmin1());
+                        cityEntity.setAdmin2(geocodingData.getAdmin2());
+                        Log.i(LOG_TAG, " geocoding data"
+                                + " [" + String.valueOf(geocodingData.getName()) + "|" + String.valueOf(geocodingData.getCountry())
+                                + " | " + String.valueOf(geocodingData.getCountry_code())
+                                + "] [" + String.valueOf(geocodingData.getLatitude()) + "|" + String.valueOf(geocodingData.getLongitude()) + "]");
+                        //buscar el id  en la bbdd y si no existe agregarla.
+                        CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
+                        if (null == cityInBBDD){
                         cityViewModel.insert(cityEntity);
+                        }
+                        cityEntityResult[0] = cityEntity;
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<GeocodingCityResponse> call, Throwable t) {
-                Log.e(LOG_TAG, " error message: "+t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<GeocodingCityResponse> call, Throwable t) {
+                    Log.e(LOG_TAG, " error message: " + t.getMessage());
+                }
+            });
+            return cityEntityResult[0];
+        //}
     }
 
 
@@ -280,20 +300,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getHistoricalWeatherAPI() {
+    private void getHistoricalWeatherAPI(CityEntity cityEntity) {
         //https://archive-api.open-meteo.com/v1/era5?latitude=52.52&longitude=13.41&start_date=2022-01-01&end_date=2022-07-13&hourly=temperature_2m
 
-        Map <String, String> parametersMap = new HashMap<>();
-        String latitude = "52.52";
-        String longitude = "13.41";
+        //Map <String, String> parametersMap = new HashMap<>();
+        String latitude = String.valueOf(cityEntity.getLatitude());
+        String longitude = String.valueOf(cityEntity.getLongitude());
         String starDate = "2000-01-01";
         String endDate = "2000-01-01";
         String hourly = "temperature_2m";
-        parametersMap.put("latitude", latitude);
+        /*parametersMap.put("latitude", latitude);
         parametersMap.put("longitude", longitude);
         parametersMap.put("start_date", starDate);
         parametersMap.put("end_date", endDate);
-        parametersMap.put("hourly", "temperature_2m");
+        parametersMap.put("hourly", "temperature_2m");*/
 
         Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+starDate+"|"+endDate+"|"+hourly);
         Call<HistoricalWatherResponse> call = ClimateChangeApiAdapter.getApiServiceOpenMeteo().getHistoricalRangeWeather(latitude,longitude,starDate,endDate,hourly);
@@ -311,6 +331,7 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, Double> mapHourly = responseFromAPI.getHourly().basicHourlyToMapHourly();
                     TreeMap<String, Double> tShortHourly = new TreeMap<>();
                     tShortHourly.putAll(mapHourly);
+                    Log.i(LOG_TAG, " response historicalWeather Ciudad: "+cityEntity.getName());
                     Log.i(LOG_TAG, " response historicalWeather: "+responseString);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly: "+tShortHourly);
                 }
@@ -318,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<HistoricalWatherResponse> call, Throwable t) {
-                Log.e(LOG_TAG, " error message: "+t.getMessage());
+                Log.e(LOG_TAG, " error message API HistoricalWeather: "+t.getMessage());
             }
         });
     }

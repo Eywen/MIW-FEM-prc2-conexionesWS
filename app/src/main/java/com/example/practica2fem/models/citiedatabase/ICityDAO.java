@@ -29,4 +29,7 @@ public interface ICityDAO {
 
     @Query("SELECT * FROM " + CityEntity.TABLA + " WHERE id = :idCity" )
     CityEntity finById(int idCity);
+
+    @Query("SELECT * FROM " + CityEntity.TABLA + " WHERE name = :cityName")
+    List<CityEntity> findByName(String cityName);
 }

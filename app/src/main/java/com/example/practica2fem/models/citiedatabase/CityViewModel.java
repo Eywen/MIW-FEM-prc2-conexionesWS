@@ -44,4 +44,8 @@ public class CityViewModel extends AndroidViewModel {
     public CityEntity finById(int idCity) {
         return cityRepository.findById(idCity);
     }
+
+    public List<CityEntity> finByName(String cityName) {
+        return cityRepository.finByName(cityName);
+    }
 }

@@ -27,4 +27,8 @@ public class CityRepository {
     public void deleteAll(){ cityDao.deleteAll();}
 
     public CityEntity findById(int idCity) { return cityDao.finById(idCity);}
+
+    public List<CityEntity> finByName(String cityName) {
+        return cityDao.findByName(cityName);
+    }
 }
