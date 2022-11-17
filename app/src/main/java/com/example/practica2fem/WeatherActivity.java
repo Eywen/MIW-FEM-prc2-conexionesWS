@@ -1,17 +1,12 @@
 package com.example.practica2fem;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.practica2fem.device.ClimateChangeApiAdapter;
 import com.example.practica2fem.device.ISpikeRESTAPIService;
@@ -31,204 +26,64 @@ import com.example.practica2fem.pojo.telemetry.Sensors;
 import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import androidx.lifecycle.ViewModelProviders;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class WeatherActivity extends AppCompatActivity {
 
-    static String LOG_TAG = "MIW-FEM";
-    private FirebaseAuth mAuth;
-    private EditText mEmailField;
-    private EditText mPasswordField;
-
-    //private ISpikeRESTAPIService apiService;
-    /*private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
+    private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
     private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4NzE3NzI4LCJleHAiOjE2Njg3NDY1MjgsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.lpMO461pK438pamcVufR6TWMsVbj4CRrK6G1wgMtj-sOPqTiahb3_tDCi8875Un3ucPXsQUKWCT8DrfdDcIOaQ";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
-    private static final String PASS_THB = "student";*/
-    /*private static final String API_BASE_HISTORICAL_WEATHER = "https://archive-api.open-meteo.com/v1/";
+    private static final String PASS_THB = "student";
+    private static final String API_BASE_HISTORICAL_WEATHER = "https://archive-api.open-meteo.com/v1/";
     private static final String API_BASE_ACTUAL_WEATHER = "https://api.openweathermap.org/data/2.5/";
-    private static final String API_BASE_GEOCODING_OPEN_METEO = "https://geocoding-api.open-meteo.com/v1/";*/
+    private static final String API_BASE_GEOCODING_OPEN_METEO = "https://geocoding-api.open-meteo.com/v1/";
 
-    /*TelemetriaViewModel telemetriaViewModel;
-    private String sAuthBearerToken ="";*/
-    //private CityViewModel cityViewModel;
-   // private String cityName = "Madrid";
+    protected final String LOG_TAG = "MiW";
+    private String cityName = "Madrid";
+    private CityViewModel cityViewModel;
+    private TextView telemetryLastTemperature;
+    private TextView telemetryLastDate;
 
-    @Override
+    TelemetriaViewModel telemetriaViewModel;
+    private String sAuthBearerToken ="";
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        // Fields
-        mEmailField = findViewById(R.id.fieldEmail);
-        mPasswordField = findViewById(R.id.fieldPassword);
+        setContentView(R.layout.activity_weather);
 
-        // Click listeners
-        findViewById(R.id.buttonSignIn).setOnClickListener(this);
-        findViewById(R.id.buttonAnonymousSignOut).setOnClickListener(this);
-        //findViewById(R.id.statusSwitch).setClickable(false);
-
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
-        //cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
+        cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
         //TODO: comprobar si el token no es mismo del api y cambiarlo
         //Agregar a bbdd la ciudad consultada si no existe en ella.
-       // CityEntity cityEntity = citiesDataPersist(cityName);
+        CityEntity cityEntity = citiesDataPersist(cityName);
         //getTelemetries();
-        //getLastTelemetryAPI();
-        //getHistoricalWeatherAPI(cityEntity);
-        //getActualWeather();
+        getLastTelemetryAPI();
+        getHistoricalWeatherAPI(cityEntity);
+        getActualWeather();
 
         //TODO: guardar en bbdd firebase los datos de telemetry, actual weather, historical weather, data consult
-    }
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        this.updateUI(currentUser);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int i = v.getId();
-        if (i == R.id.buttonSignIn) {
-            signInWithCredentials();
-            goToWeatherActivity();
-        } else if (i == R.id.buttonAnonymousSignOut) {
-            signOut();
-        }
-    }
-
-    private void goToWeatherActivity() {
-        Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-        startActivity(intent);
-    }
-
-    private void updateUI(FirebaseUser user) {
-        TextView uidView = findViewById(R.id.statusId);
-        TextView emailView = findViewById(R.id.statusEmail);
-
-        Switch mSwitch = findViewById(R.id.statusSwitch);
-        boolean isSignedIn = (user != null);
-
-        // Status text
-        if (isSignedIn) {
-            uidView.setText(R.string.signed_in);
-            emailView.setText(getString(R.string.email_fmt, user.getEmail()));
-            mPasswordField.setText("");
-            mEmailField.setText("");
-            Log.i(LOG_TAG, "signedIn: " + getString(R.string.id_fmt, user.getDisplayName()));
-            // Here you should instantiate an Intent to move forward within you app
-        } else {
-            uidView.setText(R.string.signed_out);
-            emailView.setText(null);
-            Log.i(LOG_TAG, "signOut: " + getString(R.string.signed_out));
-        }
-
-        // Button visibility
-        findViewById(R.id.buttonSignIn).setEnabled(!isSignedIn);
-        findViewById(R.id.buttonAnonymousSignOut).setEnabled(isSignedIn);
-        mSwitch.setChecked(isSignedIn);
-    }
-
-    private void signInWithCredentials() {
-        if (!validateLinkForm()) {
-            return;
-        }
-
-        // Get email and password from form
-        String email = mEmailField.getText().toString();
-        String password = mPasswordField.getText().toString();
-
-        // Create EmailAuthCredential with email and password
-        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-
-        // [START signin_with_email_and_password]
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.i(LOG_TAG, "signInWithCredentials:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(LOG_TAG, "signInWithCredentials:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed: " + task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                            updateUI(null);
-                        }
-                    }
-                });
-        // [END signin_with_email_and_password]
-    }
-
-    private boolean validateLinkForm() {
-        boolean valid = true;
-
-        String email = mEmailField.getText().toString();
-        if (TextUtils.isEmpty(email)) {
-            mEmailField.setError(getString(R.string.field_required));
-            valid = false;
-        } else {
-            mEmailField.setError(null);
-        }
-
-        String password = mPasswordField.getText().toString();
-        if (TextUtils.isEmpty(password)) {
-            mPasswordField.setError(getString(R.string.field_required));
-            valid = false;
-        } else {
-            mPasswordField.setError(null);
-        }
-
-        return valid;
     }
 
 
-    private void signOut() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    /*private CityEntity citiesDataPersist(String cityName) {
+    private CityEntity citiesDataPersist(String cityName) {
         List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         CityEntity cityEntity = null;
 
@@ -249,74 +104,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         //if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
-            //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
-           // String service = "geocoding";
-            //String cityName = "Madrid";
-            String citiesResponseNumber = "1";
+        //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
+        // String service = "geocoding";
+        //String cityName = "Madrid";
+        String citiesResponseNumber = "1";
         final CityEntity[] cityEntityResult = {null};
 
-            HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(httpLoggingInterceptor)
-                    .build();
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .client(client)
-                    .baseUrl(API_BASE_GEOCODING_OPEN_METEO)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(API_BASE_GEOCODING_OPEN_METEO)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-            ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-            Log.i(LOG_TAG, " request params geocoding: |" + cityName + "|" + citiesResponseNumber);
-            Call<GeocodingCityResponse> call = iApi.getGeocoding(cityName, citiesResponseNumber);
+        ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+        Log.i(LOG_TAG, " request params geocoding: |" + cityName + "|" + citiesResponseNumber);
+        Call<GeocodingCityResponse> call = iApi.getGeocoding(cityName, citiesResponseNumber);
 
-            call.enqueue(new Callback<GeocodingCityResponse>() {
-                @Override
-                public void onResponse(Call<GeocodingCityResponse> call, Response<GeocodingCityResponse> response) {
-                    GeocodingCityResponse responseFromAPI = response.body();
-                    String responseString = "Response Code : " + response.code();
-                    Log.i(LOG_TAG, " response GeocodingCity: " + responseString);
+        call.enqueue(new Callback<GeocodingCityResponse>() {
+            @Override
+            public void onResponse(Call<GeocodingCityResponse> call, Response<GeocodingCityResponse> response) {
+                GeocodingCityResponse responseFromAPI = response.body();
+                String responseString = "Response Code : " + response.code();
+                Log.i(LOG_TAG, " response GeocodingCity: " + responseString);
 
-                    if (responseFromAPI == null) {
-                        Log.i(LOG_TAG, " API returned empty values for city name");
-                    } else {
-                        GeocodingData geocodingData = responseFromAPI.getResults().get(0);
-                        CityEntity cityEntity = new CityEntity();
-                        cityEntity.setId(geocodingData.getId());
-                        cityEntity.setName(geocodingData.getName());
-                        cityEntity.setLatitude(geocodingData.getLatitude());
-                        cityEntity.setLongitude(geocodingData.getLongitude());
-                        cityEntity.setElevation(geocodingData.getElevation());
-                        cityEntity.setFeature_code(geocodingData.getFeature_code());
-                        cityEntity.setCountry_code(geocodingData.getCountry_code());
-                        cityEntity.setAdmin1_id(geocodingData.getAdmin1_id());
-                        cityEntity.setAdmin2_id(geocodingData.getAdmin2_id());
-                        cityEntity.setTimezone(geocodingData.getTimezone());
-                        cityEntity.setPopulation(geocodingData.getPopulation());
-                        cityEntity.setCountry_id(geocodingData.getCountry_id());
-                        cityEntity.setCountry(geocodingData.getCountry());
-                        cityEntity.setAdmin1(geocodingData.getAdmin1());
-                        cityEntity.setAdmin2(geocodingData.getAdmin2());
-                        Log.i(LOG_TAG, " geocoding data"
-                                + " [" + String.valueOf(geocodingData.getName()) + "|" + String.valueOf(geocodingData.getCountry())
-                                + " | " + String.valueOf(geocodingData.getCountry_code())
-                                + "] [" + String.valueOf(geocodingData.getLatitude()) + "|" + String.valueOf(geocodingData.getLongitude()) + "]");
-                        //buscar el id  en la bbdd y si no existe agregarla.
-                        CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
-                        if (null == cityInBBDD){
+                if (responseFromAPI == null) {
+                    Log.i(LOG_TAG, " API returned empty values for city name");
+                } else {
+                    GeocodingData geocodingData = responseFromAPI.getResults().get(0);
+                    CityEntity cityEntity = new CityEntity();
+                    cityEntity.setId(geocodingData.getId());
+                    cityEntity.setName(geocodingData.getName());
+                    cityEntity.setLatitude(geocodingData.getLatitude());
+                    cityEntity.setLongitude(geocodingData.getLongitude());
+                    cityEntity.setElevation(geocodingData.getElevation());
+                    cityEntity.setFeature_code(geocodingData.getFeature_code());
+                    cityEntity.setCountry_code(geocodingData.getCountry_code());
+                    cityEntity.setAdmin1_id(geocodingData.getAdmin1_id());
+                    cityEntity.setAdmin2_id(geocodingData.getAdmin2_id());
+                    cityEntity.setTimezone(geocodingData.getTimezone());
+                    cityEntity.setPopulation(geocodingData.getPopulation());
+                    cityEntity.setCountry_id(geocodingData.getCountry_id());
+                    cityEntity.setCountry(geocodingData.getCountry());
+                    cityEntity.setAdmin1(geocodingData.getAdmin1());
+                    cityEntity.setAdmin2(geocodingData.getAdmin2());
+                    Log.i(LOG_TAG, " geocoding data"
+                            + " [" + String.valueOf(geocodingData.getName()) + "|" + String.valueOf(geocodingData.getCountry())
+                            + " | " + String.valueOf(geocodingData.getCountry_code())
+                            + "] [" + String.valueOf(geocodingData.getLatitude()) + "|" + String.valueOf(geocodingData.getLongitude()) + "]");
+                    //buscar el id  en la bbdd y si no existe agregarla.
+                    CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
+                    if (null == cityInBBDD){
                         cityViewModel.insert(cityEntity);
-                        }
-                        cityEntityResult[0] = cityEntity;
                     }
+                    cityEntityResult[0] = cityEntity;
                 }
+            }
 
-                @Override
-                public void onFailure(Call<GeocodingCityResponse> call, Throwable t) {
-                    Log.e(LOG_TAG, " error message: " + t.getMessage());
-                }
-            });
-            return cityEntityResult[0];
+            @Override
+            public void onFailure(Call<GeocodingCityResponse> call, Throwable t) {
+                Log.e(LOG_TAG, " error message: " + t.getMessage());
+            }
+        });
+        return cityEntityResult[0];
         //}
     }
 
@@ -346,15 +201,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         call.enqueue(new Callback<Measurement>() {
             @Override
             public void onResponse(Call<Measurement> call, Response<Measurement> response) {
-                Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Measurement lm = response.body();
 
                 String responseString = "Response Code last telemetry : " + response.code();
+                String temperature = lm.getTemperature().get(0).getValue();
                 Log.i(LOG_TAG, " response last telemetry: "+responseString);
                 Log.i(LOG_TAG, " response tempeture last telemetry: "+lm.getTemperature().get(0).getValue());
                 SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
                 Date dateLastTelemetry = new Date(lm.getTemperature().get(0).getTs());
                 Log.i(LOG_TAG, " response date tempeture last telemetry: " + dateLastTelemetry);
+                telemetryLastTemperature = (TextView) findViewById(R.id.tvATelemetryLastTemperature);
+                telemetryLastDate = (TextView) findViewById(R.id.tvATelemetryLastDate);
+                //TODO: hacerlo observable
+                telemetryLastTemperature.setText(temperature);
+                telemetryLastDate.setText(dateLastTelemetry.toString());
             }
 
             @Override
@@ -396,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         call.enqueue(new Callback<Sensors>() {
             @Override
             public void onResponse(Call<Sensors> call, Response<Sensors> response) {
-                Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Sensors responseFromAPI = response.body();
                 String responseString = "Response Code : " + response.code();
                 Log.i(LOG_TAG, " response: "+responseString);
@@ -459,11 +320,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String starDate = "2000-01-01";
         String endDate = "2000-01-01";
         String hourly = "temperature_2m";
-        *//*parametersMap.put("latitude", latitude);
+        /*parametersMap.put("latitude", latitude);
         parametersMap.put("longitude", longitude);
         parametersMap.put("start_date", starDate);
         parametersMap.put("end_date", endDate);
-        parametersMap.put("hourly", "temperature_2m");*//*
+        parametersMap.put("hourly", "temperature_2m");*/
 
         Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+starDate+"|"+endDate+"|"+hourly);
         Call<HistoricalWatherResponse> call = ClimateChangeApiAdapter.getApiServiceOpenMeteo().getHistoricalRangeWeather(latitude,longitude,starDate,endDate,hourly);
@@ -495,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getActualWeather() {
-    //https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=7f632d39f8412e4d9fee1661705f8832&units=metric
+        //https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=7f632d39f8412e4d9fee1661705f8832&units=metric
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
@@ -536,6 +397,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e(LOG_TAG, " error message: "+t.getMessage());
             }
         });
-    }*/
-
+    }
 }

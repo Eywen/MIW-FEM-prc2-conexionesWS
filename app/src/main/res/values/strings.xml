@@ -8,4 +8,18 @@
     <string name="email_fmt">Email: %s</string>
     <string name="id_fmt">User ID: %s</string>
     <string name="field_required">Field required.</string>
+    <string name="weatherTitle">Weather on the earth</string>
+    <string name="tvHistoricalWeatherTitle">Historical Weather</string>
+    <string name="tvHistoricalWeatherValue">Historical Weather Value</string>
+    <string name="tvActualOutsideWeatherTitle">Actual Weather outside</string>
+    <string name="tvActualOutsideWeatherValue">Actual Weather outside value</string>
+    <string name="tvTelemetryTitle">Telemetry Madrid</string>
+    <string name="tvTelemetryLastTemperature">Telemetry value</string>
+    <string name="tvTelemetryLastdate">-- -- ----</string>
+    <string name="grados_celsius">Cº</string>
+
+
+
+    <string name="title_activity_weather">Weather on the earth</string>
+
 </resources>
