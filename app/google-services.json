@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1098798221494",
+    "project_id": "practica2-fem",
+    "storage_bucket": "practica2-fem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098798221494:android:20bdb258e991851e5fbe17",
+        "android_client_info": {
+          "package_name": "com.example.practica2fem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098798221494-ljkjuhpn0sf53bvo6043fnrm55fu6p7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.practica2fem",
+            "certificate_hash": "760052900bb38648cf68b9c6afcec1c7da4f6b4d"
+          }
+        },
+        {
+          "client_id": "1098798221494-0mhii550ml3dvs2eg9077d5h7epncnoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHNmutehiXeL9jXMHyK6jCmHtASXvB5wI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098798221494-0mhii550ml3dvs2eg9077d5h7epncnoi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

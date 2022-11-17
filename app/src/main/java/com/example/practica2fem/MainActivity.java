@@ -1,9 +1,15 @@
 package com.example.practica2fem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.practica2fem.device.ClimateChangeApiAdapter;
@@ -24,6 +30,13 @@ import com.example.practica2fem.pojo.telemetry.Sensors;
 import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -43,14 +56,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     static String LOG_TAG = "MIW-FEM";
+    private FirebaseAuth mAuth;
+    private EditText mEmailField;
+    private EditText mPasswordField;
 
     //private ISpikeRESTAPIService apiService;
     private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4NTk1MDc5LCJleHAiOjE2Njg2MjM4NzksImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.GD5__Rw43CeH7_2-X0htvmfs5YPyQn_u9ptjDtQAwm2if92UVO5JgzpwzfNiZYhWpk-A8lzvRteR9GbIpn7qCA";
+    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4Njg0NTI3LCJleHAiOjE2Njg3MTMzMjcsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.u17t8eJHKuO-73p74rkXD_orBH6SATJykg7aPMM8w2Flrgj0-FyAosTGeUeG9a-OXtwm3BehbgmRXWreWh9mxw";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
@@ -68,6 +84,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Fields
+        mEmailField = findViewById(R.id.fieldEmail);
+        mPasswordField = findViewById(R.id.fieldPassword);
+
+        // Click listeners
+        findViewById(R.id.buttonSignIn).setOnClickListener(this);
+        findViewById(R.id.buttonAnonymousSignOut).setOnClickListener(this);
+        //findViewById(R.id.statusSwitch).setClickable(false);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
         cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
         //TODO: comprobar si el token no es mismo del api y cambiarlo
         //Agregar a bbdd la ciudad consultada si no existe en ella.
@@ -77,6 +108,116 @@ public class MainActivity extends AppCompatActivity {
         getHistoricalWeatherAPI(cityEntity);
         getActualWeather();
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        this.updateUI(currentUser);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.buttonSignIn) {
+            signInWithCredentials();
+        } else if (i == R.id.buttonAnonymousSignOut) {
+            signOut();
+        }
+    }
+
+    private void updateUI(FirebaseUser user) {
+        TextView uidView = findViewById(R.id.statusId);
+        TextView emailView = findViewById(R.id.statusEmail);
+
+        Switch mSwitch = findViewById(R.id.statusSwitch);
+        boolean isSignedIn = (user != null);
+
+        // Status text
+        if (isSignedIn) {
+            uidView.setText(R.string.signed_in);
+            emailView.setText(getString(R.string.email_fmt, user.getEmail()));
+            mPasswordField.setText("");
+            mEmailField.setText("");
+            Log.i(LOG_TAG, "signedIn: " + getString(R.string.id_fmt, user.getDisplayName()));
+            // Here you should instantiate an Intent to move forward within you app
+        } else {
+            uidView.setText(R.string.signed_out);
+            emailView.setText(null);
+            Log.i(LOG_TAG, "signOut: " + getString(R.string.signed_out));
+        }
+
+        // Button visibility
+        findViewById(R.id.buttonSignIn).setEnabled(!isSignedIn);
+        findViewById(R.id.buttonAnonymousSignOut).setEnabled(isSignedIn);
+        mSwitch.setChecked(isSignedIn);
+    }
+
+    private void signInWithCredentials() {
+        if (!validateLinkForm()) {
+            return;
+        }
+
+        // Get email and password from form
+        String email = mEmailField.getText().toString();
+        String password = mPasswordField.getText().toString();
+
+        // Create EmailAuthCredential with email and password
+        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+
+        // [START signin_with_email_and_password]
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.i(LOG_TAG, "signInWithCredentials:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(LOG_TAG, "signInWithCredentials:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+                    }
+                });
+        // [END signin_with_email_and_password]
+    }
+
+    private boolean validateLinkForm() {
+        boolean valid = true;
+
+        String email = mEmailField.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError(getString(R.string.field_required));
+            valid = false;
+        } else {
+            mEmailField.setError(null);
+        }
+
+        String password = mPasswordField.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mPasswordField.setError(getString(R.string.field_required));
+            valid = false;
+        } else {
+            mPasswordField.setError(null);
+        }
+
+        return valid;
+    }
+
+
+    private void signOut() {
+        mAuth.signOut();
+        updateUI(null);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
 
     private CityEntity citiesDataPersist(String cityName) {
         List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);

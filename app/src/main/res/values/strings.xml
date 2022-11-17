@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Practica2FEM</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="signed_out">Signed Out</string>
+    <string name="status_logged">Logged</string>
+    <string name="signed_in">Signed In</string>
+    <string name="email_fmt">Email: %s</string>
+    <string name="id_fmt">User ID: %s</string>
+    <string name="field_required">Field required.</string>
 </resources>
