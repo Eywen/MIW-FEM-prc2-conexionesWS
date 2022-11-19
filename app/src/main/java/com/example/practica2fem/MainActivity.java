@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mEmailField.setText("");
             Log.i(LOG_TAG, "signedIn: " + getString(R.string.id_fmt, user.getDisplayName()));
             // Here you should instantiate an Intent to move forward within you app
+            goToWeatherActivity();
         } else {
             uidView.setText(R.string.signed_out);
             emailView.setText(null);

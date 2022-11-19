@@ -18,6 +18,7 @@ import com.example.practica2fem.pojo.geocodingResponse.GeocodingCityResponse;
 import com.example.practica2fem.pojo.geocodingResponse.GeocodingData;
 import com.example.practica2fem.pojo.historicalweather.HistoricalWatherResponse;
 import com.example.practica2fem.pojo.openweather.OpenWeatherResponse;
+import com.example.practica2fem.pojo.telemetry.AuthorizationBearer;
 import com.example.practica2fem.pojo.telemetry.Co2;
 import com.example.practica2fem.pojo.telemetry.Humidity;
 import com.example.practica2fem.pojo.telemetry.Light;
@@ -26,9 +27,12 @@ import com.example.practica2fem.pojo.telemetry.Sensors;
 import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
+import com.example.practica2fem.pojo.telemetry.Credentials;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +50,9 @@ public class WeatherActivity extends AppCompatActivity {
 
     private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4NzE3NzI4LCJleHAiOjE2Njg3NDY1MjgsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.lpMO461pK438pamcVufR6TWMsVbj4CRrK6G1wgMtj-sOPqTiahb3_tDCi8875Un3ucPXsQUKWCT8DrfdDcIOaQ";
+    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4ODU2NDc1LCJleHAiOjE2Njg4ODUyNzUsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.nqkeb5EyrxMSIkunAVn0GGlChEmjlX829DrieLCjLu6ap-yWrvBjiCBmNnQQEmE0uBkRTXLQtSYB0Ed52fQFgA";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
+    private static final String BEARER = "Bearer " ;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
     private static final String PASS_THB = "student";
@@ -55,11 +60,21 @@ public class WeatherActivity extends AppCompatActivity {
     private static final String API_BASE_ACTUAL_WEATHER = "https://api.openweathermap.org/data/2.5/";
     private static final String API_BASE_GEOCODING_OPEN_METEO = "https://geocoding-api.open-meteo.com/v1/";
 
+
     protected final String LOG_TAG = "MiW";
     private String cityName = "Madrid";
+    /*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+    Date actualDate = new Date();
+    sActualWeatherDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new Date());*/
+
+    String sActualWeatherDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(Calendar.getInstance().getTime());
+Integer hours = null;
     private CityViewModel cityViewModel;
     private TextView telemetryLastTemperature;
     private TextView telemetryLastDate;
+    private TextView actualWeatherTemperature;
+    private TextView historicalWeather;
+    private TextView historicalWeatherTimeTemp;
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
@@ -70,16 +85,60 @@ public class WeatherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weather);
 
         cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
-        //TODO: comprobar si el token no es mismo del api y cambiarlo
+        //TODO: PONER BOTON DE DESCONECTARSE U OPCION DE MENU
+        //MAIN.signOut();
+        postBearerToken();
+        //TODO: HAcer observable el token
         //Agregar a bbdd la ciudad consultada si no existe en ella.
         CityEntity cityEntity = citiesDataPersist(cityName);
         //getTelemetries();
-        getLastTelemetryAPI();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            ZonedDateTime now = ZonedDateTime.now(ZonedDateTime.now().getZone());
+            hours = now.getHour();
+        }else
+            hours = Calendar.getInstance().getInstance().getTime().getHours();
         getHistoricalWeatherAPI(cityEntity);
         getActualWeather();
+        getLastTelemetryAPI();
 
         //TODO: guardar en bbdd firebase los datos de telemetry, actual weather, historical weather, data consult
 
+    }
+
+    private void postBearerToken() {
+
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(API_LOGIN_POST_TELEMETRY)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+        Credentials c = new Credentials("studentupm2022@gmail.com","student");
+        Call<AuthorizationBearer> call = iApi.postAuthorizationBearer(c);
+
+        call.enqueue(new Callback<AuthorizationBearer>() {
+            @Override
+            public void onResponse(Call<AuthorizationBearer> call, Response<AuthorizationBearer> response) {
+                Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
+                AuthorizationBearer responseFromAPI = response.body();
+                String responseString = "Response Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
+                Log.i(LOG_TAG, " response: "+responseString);
+                sAuthBearerToken = responseFromAPI.getToken();
+                Log.i(LOG_TAG, " granted AuthBearerToken: "+sAuthBearerToken);
+            }
+
+            @Override
+            public void onFailure(Call<AuthorizationBearer> call, Throwable t) {
+                Log.e(LOG_TAG, " error message: "+t.getMessage());
+            }
+        });
     }
 
 
@@ -194,8 +253,11 @@ public class WeatherActivity extends AppCompatActivity {
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        Log.i(LOG_TAG, " request params: |"+ BEARER_TOKEN_TELEMETRY +"|"+ DEVICE_ID_TELEMETRY +"|"+keys+"|"+useStrictDataTypes);
-        Call<Measurement> call = iApi.getLastTelemetry(BEARER_TOKEN_TELEMETRY, DEVICE_ID_TELEMETRY, keys, useStrictDataTypes);
+
+            Log.i(LOG_TAG, " last telemetry sAuthBearerToken: " + sAuthBearerToken);
+
+        Log.i(LOG_TAG, " request params: |"+ sAuthBearerToken +"|"+ DEVICE_ID_TELEMETRY +"|"+keys+"|"+useStrictDataTypes);
+        Call<Measurement> call = iApi.getLastTelemetry("Bearer " + API_TOKEN_TELEMETRY, DEVICE_ID_TELEMETRY, keys, useStrictDataTypes);
 
 
         call.enqueue(new Callback<Measurement>() {
@@ -204,18 +266,26 @@ public class WeatherActivity extends AppCompatActivity {
                 Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Measurement lm = response.body();
 
-                String responseString = "Response Code last telemetry : " + response.code();
-                String temperature = lm.getTemperature().get(0).getValue();
-                Log.i(LOG_TAG, " response last telemetry: "+responseString);
-                Log.i(LOG_TAG, " response tempeture last telemetry: "+lm.getTemperature().get(0).getValue());
-                SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-                Date dateLastTelemetry = new Date(lm.getTemperature().get(0).getTs());
-                Log.i(LOG_TAG, " response date tempeture last telemetry: " + dateLastTelemetry);
-                telemetryLastTemperature = (TextView) findViewById(R.id.tvATelemetryLastTemperature);
-                telemetryLastDate = (TextView) findViewById(R.id.tvATelemetryLastDate);
-                //TODO: hacerlo observable
-                telemetryLastTemperature.setText(temperature);
-                telemetryLastDate.setText(dateLastTelemetry.toString());
+                if (response.code() == 401) {
+                    Log.i(LOG_TAG, " API returned 401 token caducado telemetry");
+                }
+
+                if (lm == null) {
+                    Log.i(LOG_TAG, " API returned empty values for telemetry");
+                }else {
+                    String responseString = "Response Code last telemetry : " + response.code();
+                    String temperature = lm.getTemperature().get(0).getValue();
+                    Log.i(LOG_TAG, " response last telemetry: " + responseString);
+                    Log.i(LOG_TAG, " response tempeture last telemetry: " + lm.getTemperature().get(0).getValue());
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+                    Date dateLastTelemetry = new Date(lm.getTemperature().get(0).getTs());
+                    Log.i(LOG_TAG, " response date tempeture last telemetry: " + dateLastTelemetry);
+                    telemetryLastTemperature = (TextView) findViewById(R.id.tvATelemetryLastTemperature);
+                    telemetryLastDate = (TextView) findViewById(R.id.tvATelemetryLastDate);
+                    //TODO: hacerlo observable
+                    telemetryLastTemperature.setText(temperature);
+                    telemetryLastDate.setText(dateLastTelemetry.toString());
+                }
             }
 
             @Override
@@ -263,7 +333,7 @@ public class WeatherActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, " response: "+responseString);
 
                 if (responseFromAPI == null) {
-                    Log.i(LOG_TAG, " API returned empty values for sensors");
+                    Log.i(LOG_TAG, " API returned empty values for telemetry");
                 }else{
 
                     List<Co2> lCo2 = responseFromAPI.getCo2();
@@ -345,6 +415,18 @@ public class WeatherActivity extends AppCompatActivity {
                     Log.i(LOG_TAG, " response historicalWeather Ciudad: "+cityEntity.getName());
                     Log.i(LOG_TAG, " response historicalWeather: "+responseString);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly: "+tShortHourly);
+                    String instantWather = starDate + "T" + hours + ":00";
+                    Double historicalTempDateActualWeather = mapHourly.get(instantWather);
+                    Log.i(LOG_TAG, " response historicalWeather mapHourly by actualWeather: "+ historicalTempDateActualWeather);
+
+
+
+                    historicalWeather = (TextView) findViewById(R.id.tvHistoricalWeatherValue);
+                    historicalWeatherTimeTemp = (TextView) findViewById(R.id.tvHistoricalWeatherTimeTemp);
+                    //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+                    //Date dateLastTelemetry = new Date(tShortHourly.k    lm.getTemperature().get(0).getTs());
+                    historicalWeather.setText(historicalTempDateActualWeather.toString());
+                    historicalWeatherTimeTemp.setText(instantWather);
                 }
             }
 
@@ -369,10 +451,13 @@ public class WeatherActivity extends AppCompatActivity {
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
+        //Datos ubicación madrid
         String latitude = "44.34";
         String longitude = "10.99";
         String appidKey = "7f632d39f8412e4d9fee1661705f8832";
         String unitsTemperature = "metric";
+
+
         Log.i(LOG_TAG, " request params actualWeather: |"+ latitude +"|"+ longitude +"|"+appidKey+"|"+unitsTemperature);
         Call<OpenWeatherResponse> call = iApi.getActualWeather(latitude,longitude,appidKey,unitsTemperature);
 
@@ -382,6 +467,7 @@ public class WeatherActivity extends AppCompatActivity {
                 OpenWeatherResponse responseFromAPI = response.body();
                 String responseString = "Response Code : " + response.code();
                 Log.i(LOG_TAG, " response actualWeather: "+responseString);
+                Log.i(LOG_TAG, " date actualWeather: "+sActualWeatherDate);
 
                 if (responseFromAPI == null) {
                     Log.i(LOG_TAG, " API returned empty values for range`s time open weather");
@@ -389,6 +475,10 @@ public class WeatherActivity extends AppCompatActivity {
                     double temp = responseFromAPI.getMain().getTemp();
                     Log.i(LOG_TAG, " response OpenWeather: "+responseString);
                     Log.i(LOG_TAG, " response ActualWeather temperature: "+temp);
+
+                    actualWeatherTemperature = (TextView) findViewById(R.id.tvActualOutsideWeatherValue);
+                    //TODO: hacerlo observable
+                    actualWeatherTemperature.setText(String.valueOf(temp));
                 }
             }
 

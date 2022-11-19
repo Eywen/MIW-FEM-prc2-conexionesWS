@@ -37,6 +37,10 @@
                 android:text="@string/tvHistoricalWeatherTitle"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvHistoricalWeatherValue"
                 android:layout_width="wrap_content"
@@ -46,6 +50,25 @@
                 android:text="@string/tvHistoricalWeatherValue"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvHisotricalWeatherUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/grados_celsius"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvHistoricalWeatherTimeTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/grados_celsius"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,6 +83,10 @@
                 android:text="@string/tvActualOutsideWeatherTitle"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvActualOutsideWeatherValue"
                 android:layout_width="wrap_content"
@@ -69,6 +96,16 @@
                 android:text="@string/tvActualOutsideWeatherValue"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tvActualWeatherUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="16dp"
+                    android:text="@string/grados_celsius"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
