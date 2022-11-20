@@ -89,6 +89,17 @@
         android:enabled="false"
         android:text="@string/sign_out"
         android:layout_toEndOf="@+id/buttonSignIn" />
+
+        <Button
+            android:id="@+id/buttonAnonymousGoWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/buttonSignIn"
+            android:enabled="false"
+            android:text="@string/go_weather"
+            android:layout_toEndOf="@+id/buttonSignIn" />
+
+
     </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

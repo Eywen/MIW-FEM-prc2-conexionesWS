@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Click listeners
         findViewById(R.id.buttonSignIn).setOnClickListener(this);
         findViewById(R.id.buttonAnonymousSignOut).setOnClickListener(this);
+        findViewById(R.id.buttonAnonymousGoWeather).setOnClickListener(this);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -95,9 +96,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int i = v.getId();
         if (i == R.id.buttonSignIn) {
             signInWithCredentials();
-            goToWeatherActivity();
+           // goToWeatherActivity();
         } else if (i == R.id.buttonAnonymousSignOut) {
             signOut();
+        } else if (i == R.id.buttonAnonymousGoWeather){
+            goToWeatherActivity();
         }
     }
 
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mEmailField.setText("");
             Log.i(LOG_TAG, "signedIn: " + getString(R.string.id_fmt, user.getDisplayName()));
             // Here you should instantiate an Intent to move forward within you app
-            goToWeatherActivity();
+            //goToWeatherActivity();
         } else {
             uidView.setText(R.string.signed_out);
             emailView.setText(null);
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Button visibility
         findViewById(R.id.buttonSignIn).setEnabled(!isSignedIn);
         findViewById(R.id.buttonAnonymousSignOut).setEnabled(isSignedIn);
+        findViewById(R.id.buttonAnonymousGoWeather).setEnabled(isSignedIn);
         mSwitch.setChecked(isSignedIn);
     }
 

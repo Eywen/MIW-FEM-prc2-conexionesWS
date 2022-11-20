@@ -2,6 +2,7 @@
     <string name="app_name">Practica2FEM</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
+    <string name="go_weather">Go weather</string>
     <string name="signed_out">Signed Out</string>
     <string name="status_logged">Logged</string>
     <string name="signed_in">Signed In</string>
@@ -14,6 +15,7 @@
     <string name="tvActualOutsideWeatherTitle">Actual Weather outside</string>
     <string name="tvActualOutsideWeatherValue">Actual Weather outside value</string>
     <string name="tvTelemetryTitle">Telemetry Madrid</string>
+    <string name="tvTempState">Estado temperatura</string>
     <string name="tvTelemetryLastTemperature">Telemetry value</string>
     <string name="tvTelemetryLastdate">-- -- ----</string>
     <string name="grados_celsius">Cº</string>

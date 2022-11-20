@@ -10,10 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +24,6 @@ import com.example.practica2fem.device.ISpikeRESTAPIService;
 import com.example.practica2fem.models.citiedatabase.CityEntity;
 import com.example.practica2fem.models.citiedatabase.CityViewModel;
 import com.example.practica2fem.models.telemetrydatabase.TelemetriaEntity;
-import com.example.practica2fem.models.telemetrydatabase.TelemetriaViewModel;
 import com.example.practica2fem.pojo.geocodingResponse.GeocodingCityResponse;
 import com.example.practica2fem.pojo.geocodingResponse.GeocodingData;
 import com.example.practica2fem.pojo.historicalweather.HistoricalWatherResponse;
@@ -64,7 +61,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4OTYzNjM2LCJleHAiOjE2Njg5OTI0MzYsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.7YIGrDVTv8tayedhM7yRskekEJIqYhnJQScqofabO8EVLE57LC8DwMnSs8nv69tFr3hDhLdH00hbPpKmeOXbuw";
+    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4OTc1NDM0LCJleHAiOjE2NjkwMDQyMzQsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.7x1a2jpPf4XvjzjMdZCd6qG4nBHKr33iw7R35M9vflsm-bbT1eVlNJ_EbTe5mLO2e9c-t_bw-SeMyTWK7m_tIw";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
     private static final String BEARER = "Bearer " ;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
@@ -95,6 +92,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     private TextView actualWeatherCity;
     private TextView historicalWeatherCity;
     private TextView estadoTelemetryTemp;
+    private TextView estadoActualWeatherTemp;
     private EditText etCityName;
     private EditText etHistoricalDate;
 
@@ -393,13 +391,12 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                     Log.i(LOG_TAG, " response date tempeture last telemetry: " + dateLastTelemetry);
                     telemetryLastTemperature = (TextView) findViewById(R.id.tvATelemetryLastTemperature);
                     telemetryLastDate = (TextView) findViewById(R.id.tvATelemetryLastDate);
-                    estadoTelemetryTemp = (TextView) findViewById(R.id.tvTempState);
-                    //TODO: hacerlo observable
+                    estadoTelemetryTemp = (TextView) findViewById(R.id.tvTempTelemetryState);
                     telemetryLastTemperature.setText(temperature);
                     telemetryLastDate.setText(dateLastTelemetry.toString());
 
                     Double temp = Double.valueOf(temperature);
-                    //18-   24
+                    //18  -   24 OMS
                     if  (null != temp) {
                         if (temp < 18) {
                             Log.i(LOG_TAG, "<18");
@@ -607,6 +604,24 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
                     actualWeatherTemperature = (TextView) findViewById(R.id.tvActualOutsideWeatherValue);
                     actualWeatherTemperature.setText(String.valueOf(temp));
+                    estadoActualWeatherTemp = (TextView) findViewById(R.id.tvTempActualState);
+
+
+                    //18  -   24 OMS
+                    if (temp < 18) {
+                        Log.i(LOG_TAG, "<18");
+                        estadoActualWeatherTemp.setText("Abrigarse, la temperatura es Baja");
+                        estadoActualWeatherTemp.setTextColor(Color.parseColor("#FF0F329B"));
+                    } else if (temp > 24) {
+                        Log.i(LOG_TAG, "> 24");
+                        estadoActualWeatherTemp.setText("Abrigarse, la temperatura es Alta");
+                        estadoActualWeatherTemp.setTextColor(Color.parseColor("#FFA3190F"));
+                    } else {
+                        Log.i(LOG_TAG, "Buena Temperatura");
+                        estadoActualWeatherTemp.setText("Temperatura Confortable");
+                        estadoActualWeatherTemp.setTextColor(Color.parseColor("#FF19B31F"));
+                    }
+
                 }
             }
 
