@@ -79,14 +79,9 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     DatePickerDialog picker;
     EditText eText;
-    Button btnGet;
-    TextView tvw;
-    /*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-    Date actualDate = new Date();
-    sActualWeatherDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new Date());*/
 
     String sActualWeatherDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(Calendar.getInstance().getTime());
-Integer hours = null;
+    Integer hours = null;
     private CityViewModel cityViewModel;
     private TextView telemetryLastTemperature;
     private TextView telemetryLastDate;
@@ -99,7 +94,6 @@ Integer hours = null;
     private EditText etCityName;
     private EditText etHistoricalDate;
 
-    TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +108,9 @@ Integer hours = null;
         historicalWeatherCity.setText(cityName);
         findViewById(R.id.btnFindWeather).setOnClickListener(this);
 
-
-
-        //tvw=(TextView)findViewById(R.id.textView1);
         eText=(EditText) findViewById(R.id.editText1);
         eText.setInputType(InputType.TYPE_NULL);
 
-/////////////////////////////////////////
         eText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,25 +123,13 @@ Integer hours = null;
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                dateHistoricalWeather = year  + "-" + (monthOfYear + 1) + "-" + (dayOfMonth < 10 ? "0"+dayOfMonth : dayOfMonth);
+                                dateHistoricalWeather = year  + "-" + ((monthOfYear + 1) <10 ? "0"+(monthOfYear + 1) : (monthOfYear + 1 )) + "-" + (dayOfMonth < 10 ? "0"+dayOfMonth : dayOfMonth);
                                 eText.setText( dateHistoricalWeather);
                             }
                         }, year, month, day);
                 picker.show();
             }
         });
-        /*btnGet=(Button)findViewById(R.id.button1);
-        btnGet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tvw.setText("Selected Date: "+ eText.getText());
-            }
-        });*/
-
-
-
-    /////////////////////////////////////////////////////////
-
         //TODO: PONER BOTON DE DESCONECTARSE U OPCION DE MENU
         //MAIN.signOut();
         postBearerToken();
@@ -165,8 +143,8 @@ Integer hours = null;
         CityEntity cityEntity = citiesDataPersist(cityName);
         //TODO: si citientity es null que vuelva a elejir ciudad  y no se llama
         if (null != cityEntity) {
-            getHistoricalWeatherAPI(cityEntity);
-            getActualWeather(cityEntity);
+            //getHistoricalWeatherAPI(cityEntity);
+            //getActualWeather(cityEntity);
             getLastTelemetryAPI();
         } else {
             Log.i(LOG_TAG,"Ciudad erronea. Entre el nombre de la ciudad.");
@@ -183,21 +161,14 @@ Integer hours = null;
             etCityName = findViewById(R.id.etCity);
             etHistoricalDate = findViewById(R.id.editText1);
             cityName = etCityName.getText().toString();
-           dateHistoricalWeather = etHistoricalDate.getText().toString();
+            dateHistoricalWeather = etHistoricalDate.getText().toString();
             Log.i(LOG_TAG,"City to find: " + cityName);
             actualWeatherCity.setText(cityName);
             historicalWeatherCity.setText(cityName);
-           historicalWeatherTimeTemp.findViewById(R.id.tvHistoricalWeatherTimeTemp);
-           historicalWeatherTimeTemp.setText(dateHistoricalWeather);
+            historicalWeatherTimeTemp.findViewById(R.id.tvHistoricalWeatherTimeTemp);
+            historicalWeatherTimeTemp.setText(dateHistoricalWeather);
             CityEntity cityEntity = citiesDataPersist(cityName);
-           // citiesDataPersist(cityName);
-            //getActualWeather(cityEntity);
-            //getHistoricalWeatherAPI(cityEntity);
-        }
-    }
-
-    private void showDatePickerDialog() {
-
+       }
     }
 
     private void postBearerToken() {
@@ -279,20 +250,17 @@ Integer hours = null;
         } else if (listcityInBBDD.size() > 1){
             //TODO: mostrar al usuario el mensaje
             Log.i(LOG_TAG, "Hay mas de una ciudad con ese nombre, elija la que quiere: " + listcityInBBDD.toString());
+            Toast.makeText(WeatherActivity.this, "Hay mas de una ciudad con ese nombre", Toast.LENGTH_SHORT).show();
         } else {
             cityEntity = listcityInBBDD.get(0);
+            getHistoricalWeatherAPI(cityEntity);
+            getActualWeather(cityEntity);
         }
 
         return cityEntity;
     }
 
     private CityEntity getGeocodingCityAPI(String cityName, boolean newFindWeather) {
-
-        //List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
-        //if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
-        //https://geocoding-api.open-meteo.com/v1/search?name=bogota&count=1
-        // String service = "geocoding";
-        //String cityName = "Madrid";
         String citiesResponseNumber = "1";
         final CityEntity[] cityEntityResult = {null};
 
@@ -360,10 +328,10 @@ Integer hours = null;
             @Override
             public void onFailure(Call<GeocodingCityResponse> call, Throwable t) {
                 Log.e(LOG_TAG, " error message: " + t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Error geocoding API. Try later", Toast.LENGTH_SHORT).show();
             }
         });
         return cityEntityResult[0];
-        //}
     }
 
 
@@ -395,7 +363,7 @@ Integer hours = null;
         call.enqueue(new Callback<Measurement>() {
             @Override
             public void onResponse(Call<Measurement> call, Response<Measurement> response) {
-                Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Measurement lm = response.body();
 
                 if (response.code() == 401) {
@@ -423,6 +391,7 @@ Integer hours = null;
             @Override
             public void onFailure(Call<Measurement> call, Throwable t) {
                 Log.e(LOG_TAG, " error message: "+t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Error lastTelemetry API. Try later", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -516,18 +485,9 @@ Integer hours = null;
     private void getHistoricalWeatherAPI(CityEntity cityEntity) {
         //https://archive-api.open-meteo.com/v1/era5?latitude=52.52&longitude=13.41&start_date=2022-01-01&end_date=2022-07-13&hourly=temperature_2m
 
-        //Map <String, String> parametersMap = new HashMap<>();
         String latitude = String.valueOf(cityEntity.getLatitude());
         String longitude = String.valueOf(cityEntity.getLongitude());
-        //TODO: buscar los datos de fecha dada en pantalla por el usuario
-        String starDate = "2000-01-01";
-        String endDate = "2000-01-01";
         String hourly = "temperature_2m";
-        /*parametersMap.put("latitude", latitude);
-        parametersMap.put("longitude", longitude);
-        parametersMap.put("start_date", starDate);
-        parametersMap.put("end_date", endDate);
-        parametersMap.put("hourly", "temperature_2m");*/
 
         Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+dateHistoricalWeather+"|"+dateHistoricalWeather+"|"+hourly);
         Call<HistoricalWatherResponse> call = ClimateChangeApiAdapter.getApiServiceOpenMeteo()
@@ -554,12 +514,8 @@ Integer hours = null;
                     Double historicalTempDateActualWeather = mapHourly.get(instantWather);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly by actualWeather: "+ historicalTempDateActualWeather);
 
-
-
                     historicalWeather = (TextView) findViewById(R.id.tvHistoricalWeatherValue);
                     historicalWeatherTimeTemp = (TextView) findViewById(R.id.tvHistoricalWeatherTimeTemp);
-                    //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-                    //Date dateLastTelemetry = new Date(tShortHourly.k    lm.getTemperature().get(0).getTs());
                     historicalWeather.setText(historicalTempDateActualWeather.toString());
                     historicalWeatherTimeTemp.setText(instantWather);
                 }
@@ -568,6 +524,7 @@ Integer hours = null;
             @Override
             public void onFailure(Call<HistoricalWatherResponse> call, Throwable t) {
                 Log.e(LOG_TAG, " error message API HistoricalWeather: "+t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Error HistoricalWeather API. Try later", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -611,7 +568,6 @@ Integer hours = null;
                     Log.i(LOG_TAG, " response ActualWeather temperature: "+temp);
 
                     actualWeatherTemperature = (TextView) findViewById(R.id.tvActualOutsideWeatherValue);
-                    //TODO: hacerlo observable
                     actualWeatherTemperature.setText(String.valueOf(temp));
                 }
             }
@@ -619,6 +575,7 @@ Integer hours = null;
             @Override
             public void onFailure(Call<OpenWeatherResponse> call, Throwable t) {
                 Log.e(LOG_TAG, " error message: "+t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Error actualWeather API. Try later", Toast.LENGTH_SHORT).show();
             }
         });
     }
