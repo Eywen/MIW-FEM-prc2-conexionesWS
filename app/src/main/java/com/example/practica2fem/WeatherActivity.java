@@ -1,10 +1,21 @@
 package com.example.practica2fem;
 
+import static android.app.PendingIntent.getActivity;
+
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -46,11 +57,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String API_LOGIN_POST_TELEMETRY = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET_TELEMETRY = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4ODU2NDc1LCJleHAiOjE2Njg4ODUyNzUsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.nqkeb5EyrxMSIkunAVn0GGlChEmjlX829DrieLCjLu6ap-yWrvBjiCBmNnQQEmE0uBkRTXLQtSYB0Ed52fQFgA";
+    private static final String API_TOKEN_TELEMETRY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4OTMyMTkwLCJleHAiOjE2Njg5NjA5OTAsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.4jn1wUovgP4GCmC7HS02XGqeiHkCXrKAEqEKISBrPw_lcjlyjgEDRqbmRJhLmrL86ZxRfNkr54FZpHM8r2Ko8A";
     private static final String BEARER_TOKEN_TELEMETRY = "Bearer " + API_TOKEN_TELEMETRY;
     private static final String BEARER = "Bearer " ;
     private static final String DEVICE_ID_TELEMETRY = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
@@ -63,6 +74,13 @@ public class WeatherActivity extends AppCompatActivity {
 
     protected final String LOG_TAG = "MiW";
     private String cityName = "Madrid";
+    private String dateHistoricalWeather = "2000-01-01";
+
+
+    DatePickerDialog picker;
+    EditText eText;
+    Button btnGet;
+    TextView tvw;
     /*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     Date actualDate = new Date();
     sActualWeatherDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new Date());*/
@@ -75,6 +93,10 @@ Integer hours = null;
     private TextView actualWeatherTemperature;
     private TextView historicalWeather;
     private TextView historicalWeatherTimeTemp;
+    private TextView chooseCity;
+    private TextView actualWeatherCity;
+    private TextView historicalWeatherCity;
+    private EditText etCityName;
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
@@ -85,23 +107,91 @@ Integer hours = null;
         setContentView(R.layout.activity_weather);
 
         cityViewModel = ViewModelProviders.of(this).get(CityViewModel.class);
+        actualWeatherCity = (TextView) findViewById(R.id.tvActualWeatherCity);
+        actualWeatherCity.setText(cityName);
+        historicalWeatherCity = (TextView) findViewById(R.id.tvHistoricalWeatherCity);
+        historicalWeatherCity.setText(cityName);
+        findViewById(R.id.btnFindWeather).setOnClickListener(this);
+
+
+
+        tvw=(TextView)findViewById(R.id.textView1);
+        eText=(EditText) findViewById(R.id.editText1);
+        eText.setInputType(InputType.TYPE_NULL);
+
+/////////////////////////////////////////
+        eText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar cldr = Calendar.getInstance();
+                int day = cldr.get(Calendar.DAY_OF_MONTH);
+                int month = cldr.get(Calendar.MONTH);
+                int year = cldr.get(Calendar.YEAR);
+                // date picker dialog
+                picker = new DatePickerDialog(WeatherActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                dateHistoricalWeather = year  + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                                eText.setText( dateHistoricalWeather);
+                            }
+                        }, year, month, day);
+                picker.show();
+            }
+        });
+        btnGet=(Button)findViewById(R.id.button1);
+        btnGet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvw.setText("Selected Date: "+ eText.getText());
+            }
+        });
+
+
+
+    /////////////////////////////////////////////////////////
+
         //TODO: PONER BOTON DE DESCONECTARSE U OPCION DE MENU
         //MAIN.signOut();
         postBearerToken();
         //TODO: HAcer observable el token
-        //Agregar a bbdd la ciudad consultada si no existe en ella.
-        CityEntity cityEntity = citiesDataPersist(cityName);
-        //getTelemetries();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             ZonedDateTime now = ZonedDateTime.now(ZonedDateTime.now().getZone());
             hours = now.getHour();
         }else
             hours = Calendar.getInstance().getInstance().getTime().getHours();
-        getHistoricalWeatherAPI(cityEntity);
-        getActualWeather();
-        getLastTelemetryAPI();
-
+        //Agregar a bbdd la ciudad consultada si no existe en ella.
+        CityEntity cityEntity = citiesDataPersist(cityName);
+        //TODO: si citientity es null que vuelva a elejir ciudad  y no se llama
+        if (null != cityEntity) {
+            getHistoricalWeatherAPI(cityEntity);
+            getActualWeather(cityEntity);
+            getLastTelemetryAPI();
+        } else {
+            Log.i(LOG_TAG,"Ciudad erronea. Entre el nombre de la ciudad.");
+        }
         //TODO: guardar en bbdd firebase los datos de telemetry, actual weather, historical weather, data consult
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        int i = view.getId();
+
+       if (i == R.id.btnFindWeather) {
+            etCityName = findViewById(R.id.etCity);
+            cityName = etCityName.getText().toString();
+            Log.i(LOG_TAG,"City to find: " + cityName);
+            actualWeatherCity.setText(cityName);
+            historicalWeatherCity.setText(cityName);
+            CityEntity cityEntity = citiesDataPersist(cityName);
+            citiesDataPersist(cityName);
+
+            getActualWeather(cityEntity);
+        }
+    }
+
+    private void showDatePickerDialog() {
 
     }
 
@@ -126,7 +216,7 @@ Integer hours = null;
         call.enqueue(new Callback<AuthorizationBearer>() {
             @Override
             public void onResponse(Call<AuthorizationBearer> call, Response<AuthorizationBearer> response) {
-                Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(WeatherActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 AuthorizationBearer responseFromAPI = response.body();
                 String responseString = "Response Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
                 Log.i(LOG_TAG, " response: "+responseString);
@@ -141,19 +231,51 @@ Integer hours = null;
         });
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.opciones_menu, menu);
+        return true;
+    }
 
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+//            case R.id.opcAjustes: // @todo Preferencias
+//                startActivity(new Intent(this, BantumiPrefs.class));
+//                return true;
+            /*case R.id.opcAcercaDe:
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.aboutTitle)
+                        .setMessage(R.string.aboutMessage)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+                return true;*/
+            case R.id.opcSalir:
+                onBackPressed();
+                //((MainActivity)getActivity()).signOut();
+                return true;
+            case R.id.opcGuardarPartida:
+                return true;
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
     private CityEntity citiesDataPersist(String cityName) {
         List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         CityEntity cityEntity = null;
 
-        if (listcityInBBDD.size() > 1){
+        if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
+            cityEntity = getGeocodingCityAPI(cityName);
+        } else if (listcityInBBDD.size() > 1){
+            //TODO: mostrar al usuario el mensaje
             Log.i(LOG_TAG, "Hay mas de una ciudad con ese nombre, elija la que quiere: " + listcityInBBDD.toString());
         } else {
             cityEntity = listcityInBBDD.get(0);
-        }
-
-        if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
-            cityEntity = getGeocodingCityAPI(cityName);
         }
 
         return cityEntity;
@@ -387,6 +509,7 @@ Integer hours = null;
         //Map <String, String> parametersMap = new HashMap<>();
         String latitude = String.valueOf(cityEntity.getLatitude());
         String longitude = String.valueOf(cityEntity.getLongitude());
+        //TODO: buscar los datos de fecha dada en pantalla por el usuario
         String starDate = "2000-01-01";
         String endDate = "2000-01-01";
         String hourly = "temperature_2m";
@@ -396,8 +519,9 @@ Integer hours = null;
         parametersMap.put("end_date", endDate);
         parametersMap.put("hourly", "temperature_2m");*/
 
-        Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+starDate+"|"+endDate+"|"+hourly);
-        Call<HistoricalWatherResponse> call = ClimateChangeApiAdapter.getApiServiceOpenMeteo().getHistoricalRangeWeather(latitude,longitude,starDate,endDate,hourly);
+        Log.i(LOG_TAG, " request params historicalWeather: |"+ latitude +"|"+ longitude +"|"+dateHistoricalWeather+"|"+dateHistoricalWeather+"|"+hourly);
+        Call<HistoricalWatherResponse> call = ClimateChangeApiAdapter.getApiServiceOpenMeteo()
+                .getHistoricalRangeWeather(latitude,longitude,dateHistoricalWeather,dateHistoricalWeather,hourly);
 
         call.enqueue(new Callback<HistoricalWatherResponse>() {
             @Override
@@ -415,7 +539,8 @@ Integer hours = null;
                     Log.i(LOG_TAG, " response historicalWeather Ciudad: "+cityEntity.getName());
                     Log.i(LOG_TAG, " response historicalWeather: "+responseString);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly: "+tShortHourly);
-                    String instantWather = starDate + "T" + hours + ":00";
+                    String instantWather = dateHistoricalWeather + "T" + (hours < 10 ? "0"+hours : hours) + ":00";
+                    Log.i(LOG_TAG, " instantWather: "+instantWather);
                     Double historicalTempDateActualWeather = mapHourly.get(instantWather);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly by actualWeather: "+ historicalTempDateActualWeather);
 
@@ -437,7 +562,7 @@ Integer hours = null;
         });
     }
 
-    private void getActualWeather() {
+    private void getActualWeather(CityEntity cityEntity) {
         //https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=7f632d39f8412e4d9fee1661705f8832&units=metric
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -451,9 +576,8 @@ Integer hours = null;
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        //Datos ubicación madrid
-        String latitude = "44.34";
-        String longitude = "10.99";
+        String latitude = String.valueOf(cityEntity.getLatitude());
+        String longitude = String.valueOf(cityEntity.getLongitude());
         String appidKey = "7f632d39f8412e4d9fee1661705f8832";
         String unitsTemperature = "metric";
 

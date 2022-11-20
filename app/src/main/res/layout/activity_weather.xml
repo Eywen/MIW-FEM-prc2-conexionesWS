@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/tvPlayer2"
             android:layout_width="wrap_content"
@@ -28,6 +27,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvHistoricalWeatherTitle"
                 android:layout_width="wrap_content"
@@ -37,6 +40,16 @@
                 android:text="@string/tvHistoricalWeatherTitle"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvHistoricalWeatherCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/txtMadrid"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,6 +87,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvActualOutsideWeatherTitle"
                 android:layout_width="wrap_content"
@@ -83,6 +100,16 @@
                 android:text="@string/tvActualOutsideWeatherTitle"
                 android:textAlignment="center"
                 android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvActualWeatherCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/txtMadrid"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -153,9 +180,90 @@
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+android:orientation="horizontal">
+            <EditText
+                android:id="@+id/etCity"
+                android:layout_width="253dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="#B7A6D5"
+                android:hint="Enter city"
+                android:padding="15dp"
+                android:textColorHint="#fff"
+                android:textStyle="bold|italic" />
+            <Button
+                android:id="@+id/btnFindWeather"
+                android:background="#0E249F"
+                android:text="@string/btnSeeTemperature"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:hint="Enter City name"
+                android:padding="15dp"
+                android:textColorHint="#fff"
+                android:textStyle="bold|italic"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <EditText
+                        android:id="@+id/editText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
+
+                        android:ems="10"
+                        android:hint="Enter Date" />
+                    <Button
+                        android:id="@+id/button1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/editText1"
+                        android:layout_marginLeft="100dp"
+                        android:text="Get Date" />
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/button1"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginTop="10dp"
+                        android:textStyle="bold"
+                        android:textSize="18dp"/>
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvChoseeCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="16dp"
+                    android:text="@string/txtMadrid"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
     </LinearLayout>
+
 
 </RelativeLayout>

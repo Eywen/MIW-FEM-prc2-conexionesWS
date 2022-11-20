@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //TODO: guardar en bbdd firebase los datos de telemetry, actual weather, historical weather, data consult
     }
 
+
     ///////////////////////////////////////////////////////////////////////////////////
     @Override
     public void onStart() {
