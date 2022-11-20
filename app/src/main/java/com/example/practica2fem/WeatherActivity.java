@@ -41,6 +41,7 @@ import com.example.practica2fem.pojo.telemetry.SoilTemp1;
 import com.example.practica2fem.pojo.telemetry.SoilTemp2;
 import com.example.practica2fem.pojo.telemetry.Temperature;
 import com.example.practica2fem.pojo.telemetry.Credentials;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -134,9 +135,10 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         //TODO: PONER BOTON DE DESCONECTARSE U OPCION DE MENU
-        //MAIN.signOut();
+
+        //TODO: HAcer perceptor con el token
         postBearerToken();
-        //TODO: HAcer observable el token
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             ZonedDateTime now = ZonedDateTime.now(ZonedDateTime.now().getZone());
             hours = now.getHour();
@@ -144,13 +146,16 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             hours = Calendar.getInstance().getInstance().getTime().getHours();
         //Agregar a bbdd la ciudad consultada si no existe en ella.
         CityEntity cityEntity = citiesDataPersist(cityName);
-        //TODO: si citientity es null que vuelva a elejir ciudad  y no se llama
+
         if (null != cityEntity) {
-            //getHistoricalWeatherAPI(cityEntity);
-            //getActualWeather(cityEntity);
             getLastTelemetryAPI();
         } else {
             Log.i(LOG_TAG,"Ciudad erronea. Entre el nombre de la ciudad.");
+            Snackbar.make(
+                    findViewById(android.R.id.content),
+                    getString(R.string.txtNoCity),
+                    Snackbar.LENGTH_LONG
+            ).show();
         }
         //TODO: guardar en bbdd firebase los datos de telemetry, actual weather, historical weather, data consult
 
@@ -219,20 +224,22 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
 //            case R.id.opcAjustes: // @todo Preferencias
-//                startActivity(new Intent(this, BantumiPrefs.class));
+//                startActivity(new Intent(this, preferences.class));
 //                return true;
-            /*case R.id.opcAcercaDe:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.aboutTitle)
-                        .setMessage(R.string.aboutMessage)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show();
-                return true;*/
             case R.id.opcSalir:
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtNoFoundSalir),
+                        Snackbar.LENGTH_LONG
+                ).show();
                 onBackPressed();
-                //((MainActivity)getActivity()).signOut();
                 return true;
             case R.id.opcGuardarPartida:
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtNoImplementado),
+                        Snackbar.LENGTH_LONG
+                ).show();
                 return true;
 
         }

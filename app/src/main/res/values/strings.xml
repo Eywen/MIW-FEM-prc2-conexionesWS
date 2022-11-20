@@ -28,5 +28,8 @@
     <string name="btnSeeTemperature">Ver Temperatura</string>
     <string name="txtSelectDate">Fecha historico temp</string>
     <string name="txtEnterDate">Enter Date yyyy-mm-dd</string>
+    <string name="txtNoCity">Ciudad inexistente en colección de datos. Introduzca otra.</string>
+    <string name="txtNoFoundSalir">"Por algun motivo no funciona el finish de la activity para volver a pantalla de log in y out"</string>
+    <string name="txtNoImplementado">"No implementado"</string>
 
 </resources>
