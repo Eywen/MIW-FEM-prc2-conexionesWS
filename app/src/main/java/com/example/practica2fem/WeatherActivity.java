@@ -162,7 +162,7 @@ Integer hours = null;
         }else
             hours = Calendar.getInstance().getInstance().getTime().getHours();
         //Agregar a bbdd la ciudad consultada si no existe en ella.
-        CityEntity cityEntity = citiesDataPersist(cityName, false);
+        CityEntity cityEntity = citiesDataPersist(cityName);
         //TODO: si citientity es null que vuelva a elejir ciudad  y no se llama
         if (null != cityEntity) {
             getHistoricalWeatherAPI(cityEntity);
@@ -189,7 +189,7 @@ Integer hours = null;
             historicalWeatherCity.setText(cityName);
            historicalWeatherTimeTemp.findViewById(R.id.tvHistoricalWeatherTimeTemp);
            historicalWeatherTimeTemp.setText(dateHistoricalWeather);
-            CityEntity cityEntity = citiesDataPersist(cityName, true);
+            CityEntity cityEntity = citiesDataPersist(cityName);
            // citiesDataPersist(cityName);
             //getActualWeather(cityEntity);
             //getHistoricalWeatherAPI(cityEntity);
@@ -270,12 +270,12 @@ Integer hours = null;
         super.onBackPressed();
         this.finish();
     }
-    private CityEntity citiesDataPersist(String cityName, boolean newFindWeather) {
+    private CityEntity citiesDataPersist(String cityName) {
         List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         CityEntity cityEntity = null;
 
         if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
-            cityEntity = getGeocodingCityAPI(cityName, newFindWeather);
+            cityEntity = getGeocodingCityAPI(cityName, true);
         } else if (listcityInBBDD.size() > 1){
             //TODO: mostrar al usuario el mensaje
             Log.i(LOG_TAG, "Hay mas de una ciudad con ese nombre, elija la que quiere: " + listcityInBBDD.toString());
