@@ -3,6 +3,7 @@ package com.example.practica2fem;
 import static android.app.PendingIntent.getActivity;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,6 +93,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     private TextView chooseCity;
     private TextView actualWeatherCity;
     private TextView historicalWeatherCity;
+    private TextView estadoTelemetryTemp;
     private EditText etCityName;
     private EditText etHistoricalDate;
 
@@ -383,9 +386,30 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                     Log.i(LOG_TAG, " response date tempeture last telemetry: " + dateLastTelemetry);
                     telemetryLastTemperature = (TextView) findViewById(R.id.tvATelemetryLastTemperature);
                     telemetryLastDate = (TextView) findViewById(R.id.tvATelemetryLastDate);
+                    estadoTelemetryTemp = (TextView) findViewById(R.id.tvTempState);
                     //TODO: hacerlo observable
                     telemetryLastTemperature.setText(temperature);
                     telemetryLastDate.setText(dateLastTelemetry.toString());
+
+                    Double temp = Double.valueOf(temperature);
+                    //18-   24
+                    if  (null != temp) {
+                        if (temp < 18) {
+                            Log.i(LOG_TAG, "<18");
+                            estadoTelemetryTemp.setText("Regular la temperatura, es Baja");
+                            estadoTelemetryTemp.setTextColor(Color.parseColor("#FF0F329B"));
+                        } else if (temp > 24) {
+                            Log.i(LOG_TAG, "> 24");
+                            estadoTelemetryTemp.setText("Regular la temperatura, es Alta");
+                            estadoTelemetryTemp.setTextColor(Color.parseColor("#FFA3190F"));
+                        } else {
+                            Log.i(LOG_TAG, "Buena Temperatura");
+                            estadoTelemetryTemp.setText("Temperatura Confortable");
+                            estadoTelemetryTemp.setTextColor(Color.parseColor("#FF19B31F"));
+                        }
+                    }
+
+
                 }
             }
 

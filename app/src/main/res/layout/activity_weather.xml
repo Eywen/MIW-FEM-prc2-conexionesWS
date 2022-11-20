@@ -156,7 +156,17 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvTelemetryTitle"
+                android:id="@+id/tvTelemetryTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="16dp"
+                android:text="@string/tvTelemetryTitle"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvTempState"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
