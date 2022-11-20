@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/opcSalir"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@android:drawable/ic_menu_revert"
         android:orderInCategory="5"
         android:title="@string/txtLogOut"
         app:showAsAction="ifRoom|withText" />
