@@ -115,7 +115,7 @@ Integer hours = null;
 
 
 
-        tvw=(TextView)findViewById(R.id.textView1);
+        //tvw=(TextView)findViewById(R.id.textView1);
         eText=(EditText) findViewById(R.id.editText1);
         eText.setInputType(InputType.TYPE_NULL);
 
@@ -139,13 +139,13 @@ Integer hours = null;
                 picker.show();
             }
         });
-        btnGet=(Button)findViewById(R.id.button1);
+        /*btnGet=(Button)findViewById(R.id.button1);
         btnGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tvw.setText("Selected Date: "+ eText.getText());
             }
-        });
+        });*/
 
 
 
