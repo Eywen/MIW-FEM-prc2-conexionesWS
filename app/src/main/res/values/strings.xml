@@ -24,9 +24,9 @@
     <string name="txtLogOut">LogOut</string>
     <string name="txtOpcionGuardarConsulta">Guardar consulta</string>
     <string name="txtMadrid">Madrid</string>
-    <string name="txtEnterCityName">Enter City name</string>
+    <string name="txtEnterCityName">Introduzca la ciudad</string>
     <string name="btnSeeTemperature">Ver Temperatura</string>
-    <string name="txtSelectDate">Seleccione fecha</string>
+    <string name="txtSelectDate">Fecha historico temp</string>
     <string name="txtEnterDate">Enter Date yyyy-mm-dd</string>
 
 </resources>
