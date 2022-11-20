@@ -18,201 +18,220 @@
             android:text="@string/weatherTitle"
             android:textAlignment="center"
             android:textSize="24sp" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvHistoricalWeatherTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvHistoricalWeatherTitle"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <TextView
-                android:id="@+id/tvHistoricalWeatherCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/txtMadrid"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvHistoricalWeatherValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvHistoricalWeatherValue"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <TextView
-                android:id="@+id/tvHisotricalWeatherUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/grados_celsius"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <TextView
-                android:id="@+id/tvHistoricalWeatherTimeTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/grados_celsius"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvActualOutsideWeatherTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvActualOutsideWeatherTitle"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <TextView
-                android:id="@+id/tvActualWeatherCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/txtMadrid"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvActualOutsideWeatherValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvActualOutsideWeatherValue"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/tvActualWeatherUnit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="16dp"
-                    android:text="@string/grados_celsius"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tvTelemetryTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvTelemetryTitle"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvATelemetryLastTemperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/tvTelemetryLastTemperature"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/tvATelemetryLastTemperatureUnit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="16dp"
-                    android:text="@string/grados_celsius"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/tvATelemetryLastDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="16dp"
-                    android:text="@string/tvTelemetryLastdate"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tvSelectCutyTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="@string/txtEnterCityName"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-            <EditText
-                android:id="@+id/etCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:ems="10"
-                android:textColorHint="#757575"
-                android:hint="Enter city"
-                 />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                android:background="@color/blue_light"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvHistoricalWeatherTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvHistoricalWeatherTitle"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvHistoricalWeatherCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:text="@string/txtMadrid"
+                        android:textAlignment="textStart"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvHistoricalWeatherValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvHistoricalWeatherValue"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvHisotricalWeatherUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/grados_celsius"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvHistoricalWeatherTimeTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/grados_celsius"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvActualOutsideWeatherTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvActualOutsideWeatherTitle"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvActualWeatherCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:text="@string/txtMadrid"
+                        android:textAlignment="textStart"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvActualOutsideWeatherValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvActualOutsideWeatherValue"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvActualWeatherUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/grados_celsius"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/blue_light"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTelemetryTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="16dp"
+                    android:text="@string/tvTelemetryTitle"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvATelemetryLastTemperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvTelemetryLastTemperature"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvATelemetryLastTemperatureUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/grados_celsius"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvATelemetryLastDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/tvTelemetryLastdate"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/gray">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvSelectCutyTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp"
+                        android:text="@string/txtEnterCityName"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/etCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
+                        android:ems="10"
+                        android:hint="Enter city"
+                        android:textAlignment="textStart"
+                        android:textColorHint="#757575" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <TextView
@@ -224,6 +243,7 @@
                         android:text="@string/txtSelectDate"
                         android:textAlignment="center"
                         android:textSize="12sp" />
+
                     <EditText
                         android:id="@+id/editText1"
                         android:layout_width="wrap_content"
@@ -234,28 +254,26 @@
                         android:textColorHint="#757575" />
 
                 </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <Button
-                    android:id="@+id/btnFindWeather"
-                    android:background="#0E249F"
-                    android:text="@string/btnSeeTemperature"
-                    android:layout_width="fill_parent"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:hint="Enter City name"
-                    android:padding="15dp"
-                    android:textColorHint="#fff"
-                    android:textStyle="bold|italic"
-                    />
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/btnFindWeather"
+                        android:background="#0E249F"
+                        android:text="@string/btnSeeTemperature"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:hint="Enter City name"
+                        android:padding="15dp"
+                        android:textColorHint="#fff"
+                        android:textStyle="bold|italic"
+                        />
+                </LinearLayout>
             </LinearLayout>
-            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
-
     </LinearLayout>
 
 
