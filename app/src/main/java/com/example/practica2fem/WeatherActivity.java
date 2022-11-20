@@ -97,6 +97,7 @@ Integer hours = null;
     private TextView actualWeatherCity;
     private TextView historicalWeatherCity;
     private EditText etCityName;
+    private EditText etHistoricalDate;
 
     TelemetriaViewModel telemetriaViewModel;
     private String sAuthBearerToken ="";
@@ -132,7 +133,7 @@ Integer hours = null;
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                dateHistoricalWeather = year  + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                                dateHistoricalWeather = year  + "-" + (monthOfYear + 1) + "-" + (dayOfMonth < 10 ? "0"+dayOfMonth : dayOfMonth);
                                 eText.setText( dateHistoricalWeather);
                             }
                         }, year, month, day);
@@ -161,7 +162,7 @@ Integer hours = null;
         }else
             hours = Calendar.getInstance().getInstance().getTime().getHours();
         //Agregar a bbdd la ciudad consultada si no existe en ella.
-        CityEntity cityEntity = citiesDataPersist(cityName);
+        CityEntity cityEntity = citiesDataPersist(cityName, false);
         //TODO: si citientity es null que vuelva a elejir ciudad  y no se llama
         if (null != cityEntity) {
             getHistoricalWeatherAPI(cityEntity);
@@ -180,14 +181,18 @@ Integer hours = null;
 
        if (i == R.id.btnFindWeather) {
             etCityName = findViewById(R.id.etCity);
+            etHistoricalDate = findViewById(R.id.editText1);
             cityName = etCityName.getText().toString();
+           dateHistoricalWeather = etHistoricalDate.getText().toString();
             Log.i(LOG_TAG,"City to find: " + cityName);
             actualWeatherCity.setText(cityName);
             historicalWeatherCity.setText(cityName);
-            CityEntity cityEntity = citiesDataPersist(cityName);
-            citiesDataPersist(cityName);
-
-            getActualWeather(cityEntity);
+           historicalWeatherTimeTemp.findViewById(R.id.tvHistoricalWeatherTimeTemp);
+           historicalWeatherTimeTemp.setText(dateHistoricalWeather);
+            CityEntity cityEntity = citiesDataPersist(cityName, true);
+           // citiesDataPersist(cityName);
+            //getActualWeather(cityEntity);
+            //getHistoricalWeatherAPI(cityEntity);
         }
     }
 
@@ -265,12 +270,12 @@ Integer hours = null;
         super.onBackPressed();
         this.finish();
     }
-    private CityEntity citiesDataPersist(String cityName) {
+    private CityEntity citiesDataPersist(String cityName, boolean newFindWeather) {
         List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         CityEntity cityEntity = null;
 
         if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
-            cityEntity = getGeocodingCityAPI(cityName);
+            cityEntity = getGeocodingCityAPI(cityName, newFindWeather);
         } else if (listcityInBBDD.size() > 1){
             //TODO: mostrar al usuario el mensaje
             Log.i(LOG_TAG, "Hay mas de una ciudad con ese nombre, elija la que quiere: " + listcityInBBDD.toString());
@@ -281,7 +286,7 @@ Integer hours = null;
         return cityEntity;
     }
 
-    private CityEntity getGeocodingCityAPI(String cityName) {
+    private CityEntity getGeocodingCityAPI(String cityName, boolean newFindWeather) {
 
         //List<CityEntity> listcityInBBDD = cityViewModel.finByName(cityName);
         //if ((null == listcityInBBDD) || listcityInBBDD.isEmpty()) {
@@ -342,8 +347,13 @@ Integer hours = null;
                     CityEntity cityInBBDD = cityViewModel.finById(geocodingData.getId());
                     if (null == cityInBBDD){
                         cityViewModel.insert(cityEntity);
-                    }
+                    } else cityEntity = cityInBBDD;
                     cityEntityResult[0] = cityEntity;
+
+                    if (newFindWeather){
+                        getActualWeather(cityEntity);
+                        getHistoricalWeatherAPI(cityEntity);
+                    }
                 }
             }
 
