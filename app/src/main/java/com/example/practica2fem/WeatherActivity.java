@@ -289,6 +289,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (responseFromAPI == null) {
                     Log.i(LOG_TAG, " API returned empty values for city name");
+                    Toast.makeText(WeatherActivity.this, "No hay datos de esta ciudad en la API.", Toast.LENGTH_SHORT).show();
                 } else {
                     GeocodingData geocodingData = responseFromAPI.getResults().get(0);
                     CityEntity cityEntity = new CityEntity();
@@ -435,6 +436,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (responseFromAPI == null) {
                     Log.i(LOG_TAG, " API returned empty values for telemetry");
+                    Toast.makeText(WeatherActivity.this, "No hay datos de la API.", Toast.LENGTH_SHORT).show();
                 }else{
 
                     List<Co2> lCo2 = responseFromAPI.getCo2();
@@ -484,7 +486,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     private void getHistoricalWeatherAPI(CityEntity cityEntity) {
         //https://archive-api.open-meteo.com/v1/era5?latitude=52.52&longitude=13.41&start_date=2022-01-01&end_date=2022-07-13&hourly=temperature_2m
-
+        historicalWeather = (TextView) findViewById(R.id.tvHistoricalWeatherValue);
         String latitude = String.valueOf(cityEntity.getLatitude());
         String longitude = String.valueOf(cityEntity.getLongitude());
         String hourly = "temperature_2m";
@@ -502,6 +504,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (responseFromAPI == null) {
                     Log.i(LOG_TAG, " API returned empty values for range`s time historical weather");
+                    historicalWeather.setText("No hay datos");
+                    Toast.makeText(WeatherActivity.this, "No hay datos de la API.", Toast.LENGTH_SHORT).show();
                 }else {
                     Map<String, Double> mapHourly = responseFromAPI.getHourly().basicHourlyToMapHourly();
                     TreeMap<String, Double> tShortHourly = new TreeMap<>();
@@ -514,7 +518,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                     Double historicalTempDateActualWeather = mapHourly.get(instantWather);
                     Log.i(LOG_TAG, " response historicalWeather mapHourly by actualWeather: "+ historicalTempDateActualWeather);
 
-                    historicalWeather = (TextView) findViewById(R.id.tvHistoricalWeatherValue);
+
                     historicalWeatherTimeTemp = (TextView) findViewById(R.id.tvHistoricalWeatherTimeTemp);
                     historicalWeather.setText(historicalTempDateActualWeather.toString());
                     historicalWeatherTimeTemp.setText(instantWather);
@@ -524,7 +528,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFailure(Call<HistoricalWatherResponse> call, Throwable t) {
                 Log.e(LOG_TAG, " error message API HistoricalWeather: "+t.getMessage());
-                Toast.makeText(WeatherActivity.this, "Error HistoricalWeather API. Try later", Toast.LENGTH_SHORT).show();
+                historicalWeather.setText("Error API.");
+                Toast.makeText(WeatherActivity.this, "Error HistoricalWeather API.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -562,6 +567,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (responseFromAPI == null) {
                     Log.i(LOG_TAG, " API returned empty values for range`s time open weather");
+                    actualWeatherTemperature.setText("No hay datos");
+                    Toast.makeText(WeatherActivity.this, "No hay datos de la API.", Toast.LENGTH_SHORT).show();
                 }else {
                     double temp = responseFromAPI.getMain().getTemp();
                     Log.i(LOG_TAG, " response OpenWeather: "+responseString);
